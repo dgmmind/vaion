@@ -72,6 +72,9 @@ $router->get('/manager/evaluations', function() {
     }
 });
 
+// Ruta para ver evaluaciones de un empleado
+$router->get('/employee/evaluations', [\App\Controllers\EmployeeController::class, 'viewEvaluations']);
+
 // Dispatch (trim base dir like /vaion)
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';

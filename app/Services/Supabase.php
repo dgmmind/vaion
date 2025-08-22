@@ -14,8 +14,17 @@ class Supabase
         // Configura tu URL y API KEY de Supabase aquí
         $this->baseUrl = 'https://fqlmqnyshzknkogbsznl.supabase.co';
         $this->apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxbG1xbnlzaHprbmtvZ2Jzem5sIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Nzc1NTMxOCwiZXhwIjoyMDYzMzMxMzE4fQ.IEbeR0lo1mTAz5JVIS7e-jjFPeQ9Bn7kTEumw-euz_8';
+    
     }
 
+    /**
+     * Realiza una petición HTTP a la API de Supabase
+     * 
+     * @param string $method Método HTTP (GET, POST, PATCH, DELETE, etc.)
+     * @param string $endpoint Endpoint de la API (sin la URL base)
+     * @param mixed $data Datos a enviar en el cuerpo de la petición
+     * @return object Objeto con los datos de respuesta y metadatos
+     */
     private function request($method, $endpoint, $data = null)
     {
         $url = rtrim($this->baseUrl, '/') . '/' . ltrim($endpoint, '/');
@@ -58,8 +67,6 @@ class Supabase
             
             // Asegurarse de que el Content-Length esté configurado correctamente
             $opts['http']['header'] = implode("\r\n", $headers) . "\r\nContent-Length: " . strlen($jsonData);
-            
-            error_log("Enviando datos a Supabase (" . strtoupper($method) . ' ' . $url . "): " . $jsonData);
         }
         
         $context = stream_context_create($opts);
@@ -70,45 +77,83 @@ class Supabase
         preg_match('{HTTP\/\S*\s(\d{3})}', $statusLine, $match);
         $status = $match[1] ?? '000';
         
-        // Registrar la respuesta
-        error_log("Supabase response (" . $method . ' ' . $endpoint . "): Status $status - " . substr($result, 0, 1000));
+        // Crear objeto de respuesta estandarizado
+        $response = new class {
+            public $data = null;
+            public $error = null;
+            public $status = 0;
+            public $headers = [];
+            
+            public function getData() {
+                return $this->data;
+            }
+            
+            public function hasError() {
+                return $this->error !== null || $this->status >= 400;
+            }
+            
+            public function getError() {
+                return $this->error;
+            }
+        };
+        
+        $response->status = (int)$status;
+        $response->headers = $http_response_header;
+        
+        // Registrar la respuesta (eliminado logging en producción)
         
         // Si hay un error en la petición HTTP
         if ($result === false) {
             $error = error_get_last();
-            error_log('Error en la petición a Supabase: ' . ($error['message'] ?? 'Error desconocido'));
-            error_log('URL: ' . $url);
-            error_log('Status: ' . $status);
-            error_log('Response Headers: ' . print_r($http_response_header, true));
-            return false;
+            $errorMessage = $error['message'] ?? 'Error desconocido al realizar la petición';
+            
+            $response->error = [
+                'message' => $errorMessage,
+                'code' => 'REQUEST_ERROR',
+                'details' => [
+                    'url' => $url,
+                    'method' => $method,
+                    'status' => $status,
+                    'headers' => $http_response_header
+                ]
+            ];
+            
+            // Logging eliminado
+            
+            return $response;
+        }
+        
+        // Decodificar la respuesta JSON si existe
+        if (!empty($result)) {
+            $decoded = json_decode($result, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $response->data = $decoded;
+            } else {
+                $response->data = $result;
+            }
         }
         
         // Si el estado HTTP indica un error
         if ($status >= 400) {
-            $errorLog = [
-                'error' => 'Error en la respuesta de Supabase',
+            $errorInfo = [
                 'http_status' => $status,
                 'url' => $url,
                 'method' => $method,
                 'request_data' => $data ?? null,
-                'response' => $result,
+                'response' => $response->data,
                 'response_headers' => $http_response_header
             ];
             
-            error_log('ERROR SUPABASE: ' . json_encode($errorLog, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $response->error = [
+                'message' => 'Error en la respuesta del servidor',
+                'code' => 'HTTP_' . $status,
+                'details' => $errorInfo
+            ];
             
-            // Intentar decodificar el mensaje de error
+            // Logging eliminado
             $errorData = json_decode($result, true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                if (isset($errorData['message'])) {
-                    error_log('Mensaje de error de Supabase: ' . $errorData['message']);
-                }
-                if (isset($errorData['details'])) {
-                    error_log('Detalles del error: ' . print_r($errorData['details'], true));
-                }
-                if (isset($errorData['hint'])) {
-                    error_log('Sugerencia: ' . $errorData['hint']);
-                }
+                // Logging eliminado
             }
             
             return false;
@@ -136,7 +181,7 @@ class Supabase
         }
         
         // Si llegamos aquí, hubo un error
-        error_log("Error en la respuesta de Supabase (HTTP $status): No se pudo decodificar la respuesta JSON");
+        // Logging eliminado
         return false;
     }
 
@@ -156,26 +201,22 @@ class Supabase
         
         // Verificar si el archivo existe
         if (!file_exists($evaluationsPath)) {
-            error_log('ERROR: No se encontró el archivo de evaluaciones');
             return false;
         }
         
         // Leer el contenido del archivo
         $evaluationsJson = file_get_contents($evaluationsPath);
         if ($evaluationsJson === false) {
-            error_log('ERROR: No se pudo leer el archivo de evaluaciones');
             return false;
         }
         
         // Decodificar el JSON
         $evaluationsData = json_decode($evaluationsJson, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log('ERROR: Formato de archivo de evaluaciones inválido');
             return false;
         }
         
         if (!is_array($evaluationsData) || empty($evaluationsData)) {
-            error_log('ERROR: No hay categorías de evaluación definidas');
             return false;
         }
 
@@ -183,7 +224,6 @@ class Supabase
         
         // Validar que $employees sea un array
         if (!is_array($employees)) {
-            error_log('ERROR: Datos de empleados inválidos');
             return false;
         }
         
@@ -219,7 +259,6 @@ class Supabase
         }
         
         if (empty($allEvaluations)) {
-            error_log('ERROR: No se generaron evaluaciones para insertar');
             return false;
         }
         
@@ -242,7 +281,6 @@ class Supabase
     public function getDaysByManager($manager_id)
     {
         if (empty($manager_id)) {
-            error_log('Error: No se proporcionó el ID del manager');
             return false;
         }
         
@@ -250,7 +288,6 @@ class Supabase
         $result = $this->request('GET', $endpoint);
         
         if ($result === false) {
-            error_log('Error al obtener los días del manager: ' . $manager_id);
             return false;
         }
         
@@ -260,18 +297,16 @@ class Supabase
     public function getEvaluationsByDay($day_id)
     {
         if (empty($day_id)) {
-            error_log('Error: No se proporcionó el ID del día para obtener evaluaciones');
             return false;
         }
         
         // Especificar explícitamente las columnas que necesitamos, incluyendo evaluation_id
         $endpoint = 'rest/v1/evaluations?select=evaluation_id,day_id,employee_id,category,checked,item,created_at,updated_at&day_id=eq.' . urlencode((string)$day_id);
         
-        error_log('Obteniendo evaluaciones para el día ID: ' . $day_id);
+        
         $result = $this->request('GET', $endpoint);
         
         if ($result === false) {
-            error_log('Error al obtener evaluaciones para el día con ID: ' . $day_id);
             return false;
         }
         
@@ -279,7 +314,6 @@ class Supabase
         if (is_string($result)) {
             $result = json_decode($result, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log('Error al decodificar la respuesta de evaluaciones: ' . json_last_error_msg());
                 return false;
             }
         }
@@ -293,12 +327,43 @@ class Supabase
             }
             unset($evaluation); // Romper la referencia
             
-            error_log('Se encontraron ' . count($result) . ' evaluaciones para el día ID: ' . $day_id);
-            if (!empty($result)) {
-                error_log('Primera evaluación: ' . json_encode($result[0]));
-            }
+            
         }
         
+        return is_array($result) ? $result : [];
+    }
+
+    /**
+     * Obtiene evaluaciones por empleado
+     * @param string|int $employee_id
+     * @return array Lista de evaluaciones o []
+     */
+    public function getEvaluationsByEmployee($employee_id)
+    {
+        if (empty($employee_id)) {
+            return [];
+        }
+
+        $endpoint = 'rest/v1/evaluations'
+            . '?select=day_id,employee_id,category,checked,item,created_at,updated_at'
+            . '&employee_id=eq.' . urlencode((string)$employee_id)
+            . '&order=created_at.desc';
+
+        
+        $result = $this->request('GET', $endpoint);
+
+        if ($result === false) {
+            return [];
+        }
+
+        // Decodificar si viene como string
+        if (is_string($result)) {
+            $result = json_decode($result, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return [];
+            }
+        }
+
         return is_array($result) ? $result : [];
     }
     
@@ -310,7 +375,6 @@ class Supabase
     public function getDayById($day_id)
     {
         if (empty($day_id)) {
-            error_log('Error: No se proporcionó el ID del día');
             return false;
         }
         
@@ -318,7 +382,6 @@ class Supabase
         $result = $this->request('GET', $endpoint);
         
         if ($result === false) {
-            error_log('Error al obtener el día con ID: ' . $day_id);
             return false;
         }
         
@@ -326,7 +389,6 @@ class Supabase
         if (is_string($result)) {
             $result = json_decode($result, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log('Error al decodificar la respuesta de Supabase: ' . json_last_error_msg());
                 return false;
             }
         }
@@ -337,7 +399,7 @@ class Supabase
         }
         
         // Si llegamos aquí, no se encontró el día
-        error_log('No se encontró el día con ID: ' . $day_id);
+        
         return false;
     }
 
@@ -354,7 +416,7 @@ class Supabase
             return $result[0]['id'];
         }
         
-        error_log('Error al crear evaluación: ' . json_encode($result));
+        
         return false;
     }
 
@@ -367,19 +429,16 @@ class Supabase
     public function updateEvaluation($evaluationId, $updateData) {
         // Validar que el ID de evaluación no esté vacío
         if (empty($evaluationId)) {
-            error_log('Error: ID de evaluación no proporcionado');
             return false;
         }
         
         // Validar que los datos de actualización no estén vacíos
         if (empty($updateData) || !is_array($updateData)) {
-            error_log('Error: No se proporcionaron datos para actualizar');
             return false;
         }
         
         // Validar que al menos uno de los campos requeridos esté presente
         if (!isset($updateData['item']) && !isset($updateData['checked'])) {
-            error_log('Error: Debe proporcionar al menos un campo para actualizar (item o checked)');
             return false;
         }
         
@@ -405,24 +464,19 @@ class Supabase
         // Agregar el ID como parámetro de consulta
         $endpoint .= '?evaluation_id=eq.' . urlencode($evaluationId);
         
-        error_log('Actualizando evaluación:');
-        error_log('- Endpoint: ' . $endpoint);
-        error_log('- Datos: ' . json_encode($supabaseData, JSON_PRETTY_PRINT));
+        
         
         // Usar el método request existente que ya maneja la autenticación
         $result = $this->request('PATCH', $endpoint, $supabaseData);
         
         // Si la respuesta es false, hubo un error
         if ($result === false) {
-            $error = error_get_last();
-            error_log('Error al actualizar la evaluación con ID: ' . $evaluationId);
-            error_log('Error detallado: ' . ($error['message'] ?? 'Error desconocido'));
             return false;
         }
-        
-        error_log('Actualización exitosa. Respuesta: ' . json_encode($result, JSON_PRETTY_PRINT));
         
         // Si llegamos hasta aquí, asumir que la operación fue exitosa
         return true;
     }
+
+
 }

@@ -1,11 +1,27 @@
 <?php require_once __DIR__ . '/../Settings/settings.php'; 
 
-// Definir las categorías en el orden deseado
-$categorias = [
-    'PUNTUALIDAD', 'PRESENTACION', 'ORDEN', 'COMUNICACION', 
-    'EQUIPO', 'CONDUCTA', 'ACTITUD', 'PRODUCTIVIDAD', 
-    'COLABORACION', 'NORMAS', 'RESPONSABILIDAD', 'ATENCION_AL_CLIENTE'
-];
+// Cargar categorías e items desde json/evaluations.json para mantener una única fuente de verdad
+$evaluationsData = [];
+$categorias = [];
+try {
+    $evalJsonPath = __DIR__ . '/../../json/evaluations.json';
+    if (is_readable($evalJsonPath)) {
+        $evaluationsData = json_decode(file_get_contents($evalJsonPath), true);
+        if (is_array($evaluationsData)) {
+            $categorias = array_keys($evaluationsData); // mantiene el orden del JSON
+        }
+    }
+} catch (\Throwable $e) {
+    // Ignorar y usar fallback
+}
+// Fallback si no se pudo cargar el JSON
+if (empty($categorias)) {
+    $categorias = [
+        'PUNTUALIDAD', 'PRESENTACION', 'ORDEN', 'COMUNICACION', 
+        'EQUIPO', 'CONDUCTA', 'ACTITUD', 'PRODUCTIVIDAD', 
+        'COLABORACION', 'NORMAS', 'RESPONSABILIDAD', 'ATENCION_AL_CLIENTE'
+    ];
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -14,245 +30,75 @@ $categorias = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title) ?></title>
     <style>
+        /* Minimal essential styles for layout and interactions */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
-        }
-        .container {
-            max-width: 95%;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-        }
-        .evaluations-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        .evaluations-table th, 
-        .evaluations-table td {
-            border: 1px solid #e0e0e0;
-            padding: 12px 15px;
-            text-align: center;
-            vertical-align: middle;
-        }
-        .evaluations-table th {
-            background-color: #3498db;
-            color: white;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .evaluations-table th:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 11;
-            background-color: #2980b9;
-        }
-        .evaluations-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .evaluations-table tbody tr:hover {
-            background-color: #f1f8ff;
-        }
-        .employee-name {
-            font-weight: 600;
-            color: #2c3e50;
-            white-space: nowrap;
-        }
-        .status-icon {
-            font-size: 16px;
-        }
-        .status-perfect {
-            color: #27ae60;
-        }
-        .status-good {
-            color: #f39c12;
-        }
-        .status-poor {
-            color: #e74c3c;
-        }
-        /* Base styles */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
+            padding: 15px;
         }
         
         .container {
-            max-width: 95%;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
             overflow-x: auto;
         }
         
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        /* Table styles */
         .evaluations-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 14px;
-            table-layout: fixed;
+            margin: 10px 0;
         }
         
         .evaluations-table th, 
         .evaluations-table td {
-            border: 1px solid #e0e0e0;
-            padding: 8px 10px;
+            border: 1px solid #ddd;
+            padding: 6px;
             text-align: center;
-            vertical-align: middle;
         }
         
         .evaluations-table th {
-            background-color: #3498db;
+            background: #3498db;
             color: white;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
         
         .category-header {
-            background-color: #2c3e50 !important;
-            font-size: 13px;
-            padding: 8px 5px;
+            background: #2c3e50;
         }
         
         .evaluations-table th:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 11;
-            background-color: #2980b9;
+            /* First column styles */
+        }
+        
+        .evaluation-checkbox {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .evaluation-checkbox input {
+            position: absolute;
+            opacity: 0;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            position: relative;
+            display: inline-block;
+            height: 18px;
+            width: 18px;
+            background: white;
+            border: 1px solid #999;
+            border-radius: 4px;
         }
         
         .item-cell {
-            text-align: left !important;
-            padding: 8px !important;
-            background-color: #f8f9fa;
-            border-right: 1px dashed #e0e0e0 !important;
-            font-size: 13px;
-            word-break: break-word;
-        }
-        
-        .check-cell {
-            width: 60px;
-            padding: 8px !important;
-            background-color: #f8f9fa;
-        }
-        
-        .evaluations-table tbody tr:hover .item-cell,
-        .evaluations-table tbody tr:hover .check-cell {
-            background-color: #f1f8ff;
-        }
-        
-        .evaluations-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        .evaluations-table tbody tr:hover {
-            background-color: #f1f8ff;
-        }
-        
-        /* Evaluation items */
-        .evaluation-cell {
-            padding: 5px !important;
-            text-align: center;
-            vertical-align: middle !important;
-            min-width: 100px;
-        }
-        
-        .evaluation-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-            padding: 8px 5px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            transition: background-color 0.2s;
-        }
-        
-        .evaluation-item:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .item-name {
-            font-size: 11px;
-            color: #555;
-            margin-bottom: 8px;
-            text-align: center;
-            word-break: break-word;
-            line-height: 1.2;
-            font-weight: 500;
-        }
-        
-        /* Checkbox styles */
-        .evaluation-checkbox {
-            display: inline-block;
-            position: relative;
-            padding-left: 25px;
-            margin: 0;
-            cursor: default;
-        }
-        
-        .evaluation-checkbox input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-        
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 20px;
-            width: 20px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        
-        .evaluation-checkbox:hover .checkmark {
-            background-color: #e9ecef;
+            text-align: left;
+            padding: 5px;
+            min-width: 150px;
         }
         
         .evaluation-checkbox input:checked ~ .checkmark {
-            background-color: #28a745;
-            border-color: #28a745;
+            background: #4CAF50;
         }
         
         .checkmark:after {
@@ -266,111 +112,22 @@ $categorias = [
         }
         
         .evaluation-checkbox .checkmark:after {
-            left: 7px;
-            top: 3px;
-            width: 5px;
-            height: 10px;
+            left: 6px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
             border: solid white;
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
         
-        /* Employee name cell */
-        .employee-name {
-            font-weight: 600;
-            color: #2c3e50;
-            white-space: nowrap;
-            padding: 10px 15px !important;
-            background-color: #f8f9fa;
-            position: sticky;
-            left: 0;
-            z-index: 9;
-        }
-        
-        /* Back link */
         .back-link {
             display: inline-block;
-            margin-bottom: 20px;
-            padding: 8px 15px;
-            background-color: #95a5a6;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+            background: #95a5a6;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .back-link:hover {
-            background-color: #7f8c8d;
-            text-decoration: none;
-        }
-        
-        .evaluation-cell {
-            padding: 5px !important;
-            text-align: center;
-            vertical-align: middle !important;
-        }
-        
-        .evaluation-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-            padding: 5px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-        
-        .item-name {
-            font-size: 11px;
-            color: #555;
-            margin-bottom: 8px;
-            text-align: center;
-            word-break: break-word;
-            line-height: 1.2;
-        }
-        
-        .evaluation-checkbox {
-            display: inline-block;
-            position: relative;
-            padding-left: 25px;
-            margin: 0;
-            cursor: default;
-        }
-        
-        .evaluation-checkbox input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-        
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 20px;
-            width: 20px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        
-        .evaluation-checkbox:hover .checkmark {
-            background-color: #e9ecef;
-        }
-        
-        .evaluation-checkbox input:checked ~ .checkmark {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        
-        .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
         }
         
         .evaluation-checkbox input:checked ~ .checkmark:after {
@@ -386,14 +143,11 @@ $categorias = [
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
-        }
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
+        
         .back-link:hover {
             background-color: #2980b9;
         }
+            
         .status-icon {
             text-align: center;
             font-size: 18px;
@@ -512,14 +266,18 @@ $categorias = [
                         formData.append('category', category);
                         formData.append('field', 'item');
                         formData.append('value', newValue);
-                        formData.append('checked', checked); // Añadimos el checkbox como false
+                        // Si el valor es 'PERFECTO', marcamos el checkbox como true
+                        const isPerfecto = (newValue === 'PERFECTO');
+                        formData.append('checked', isPerfecto);
                         formData.append('day_id', '<?= $day_id ?? '' ?>');
                         
                         console.log('Enviando datos al servidor:', {
                             evaluation_id: evaluationId,
                             item: newValue,
-                            checked: false
+                            checked: isPerfecto
                         });
+
+                        console.log(...formData);
                         
                         const response = await fetch('<?= BASE_URL ?>/manager/update_evaluation', {
                             method: 'POST',
@@ -531,7 +289,22 @@ $categorias = [
                         if (data.success) {
                             this.dataset.previousValue = newValue;
                             const checkbox = this.closest('tr').querySelector(`.evaluation-checkbox-input[data-category="${category}"]`);
-                            if (checkbox) checkbox.disabled = false;
+                            if (checkbox) {
+                                checkbox.disabled = false;
+                                // Actualizar el estado del checkbox basado en el valor seleccionado
+                                checkbox.checked = isPerfecto;
+                                // Actualizar visualmente el checkmark
+                                const checkmark = checkbox.nextElementSibling;
+                                if (checkmark) {
+                                    if (isPerfecto) {
+                                        checkmark.style.backgroundColor = '#4CAF50';
+                                        checkmark.style.borderColor = '#4CAF50';
+                                    } else {
+                                        checkmark.style.backgroundColor = '';
+                                        checkmark.style.borderColor = '';
+                                    }
+                                }
+                            }
                         } else {
                             alert('Error: ' + (data.message || 'Error desconocido'));
                             this.value = this.dataset.previousValue;

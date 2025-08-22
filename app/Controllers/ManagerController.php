@@ -212,14 +212,6 @@ class ManagerController
         $day_id = $_POST['day_id'] ?? null;
         $checked = isset($_POST['checked']) ? filter_var($_POST['checked'], FILTER_VALIDATE_BOOLEAN) : false;
         
-        // Registrar datos recibidos
-        error_log('Datos recibidos en updateEvaluation:');
-        error_log('- evaluation_id: ' . $evaluation_id);
-        error_log('- field: ' . $field);
-        error_log('- value: ' . $value);
-        error_log('- checked: ' . ($checked ? 'true' : 'false'));
-        error_log('- day_id: ' . $day_id);
-        error_log('Datos POST completos: ' . print_r($_POST, true));
         
         // Validar datos requeridos
         if (empty($evaluation_id) || $field !== 'item' || $value === null) {
@@ -250,7 +242,6 @@ class ManagerController
             'checked' => $checked  // Incluir el estado del checkbox
         ];
         
-        error_log('Datos a enviar a Supabase: ' . print_r($updateData, true));
         
         // Actualizar tanto el ítem como el estado del checkbox
         $success = $supabase->updateEvaluation($evaluation_id, $updateData);

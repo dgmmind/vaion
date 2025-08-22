@@ -12,3 +12,6 @@
   <a href="<?= BASE_URL ?>/auth/login">Ir a Login</a>
 </body>
 </html>
+
+<?php
+print_r($_SESSION);

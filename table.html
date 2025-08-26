@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Evaluaciones - Diseño Minimalista</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .data-table {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 2px solid #e9ecef;
+            white-space: nowrap;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: middle;
+            height: 40px;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Celda de empleado */
+        td:first-child {
+            font-weight: 500;
+            color: #212529;
+            min-width: 120px;
+            padding-left: 12px;
+        }
+
+        /* Celdas de checkbox */
+        .checkbox-cell {
+            text-align: center;
+            width: 40px;
+            padding: 4px;
+        }
+
+        .checkbox-cell input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #007bff;
+            cursor: pointer;
+        }
+
+        .checkbox-cell input[type="checkbox"]:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Celdas de select */
+        .select-cell {
+            min-width: 120px;
+            padding: 4px 8px;
+        }
+
+        .select-cell select {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 13px;
+            color: #495057;
+            cursor: pointer;
+            height: 28px;
+        }
+
+        .select-cell select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        .select-cell select:hover {
+            border-color: #adb5bd;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+            }
+            
+            td:first-child {
+                min-width: 100px;
+            }
+            
+            .select-cell {
+                min-width: 100px;
+            }
+        }
+
+        /* Header styling */
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluaciones de Empleados</h1>
+            <p>Sistema de evaluación y seguimiento de desempeño</p>
+        </div>
+        
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th colspan="2">Puntualidad</th>
+                        <th colspan="2">Calidad</th>
+                        <th colspan="2">Comunicación</th>
+                        <th colspan="2">Trabajo en Equipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-employee-id="1">
+                        <td>Ana García</td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Puntualidad">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Calidad">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" disabled>
+                        </td>
+                        <td class="select-cell" data-category="Comunicación">
+                            <select>
+                                <option value="BUENO" selected>BUENO</option>
+                                <option value="PERFECTO">PERFECTO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Trabajo en Equipo">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr data-employee-id="2">
+                        <td>Carlos Rodríguez</td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" disabled>
+                        </td>
+                        <td class="select-cell" data-category="Puntualidad">
+                            <select>
+                                <option value="REGULAR" selected>REGULAR</option>
+                                <option value="PERFECTO">PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Calidad">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Comunicación">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" disabled>
+                        </td>
+                        <td class="select-cell" data-category="Trabajo en Equipo">
+                            <select>
+                                <option value="BUENO" selected>BUENO</option>
+                                <option value="PERFECTO">PERFECTO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr data-employee-id="3">
+                        <td>María López</td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Puntualidad">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Calidad">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Comunicación">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" checked disabled>
+                        </td>
+                        <td class="select-cell" data-category="Trabajo en Equipo">
+                            <select>
+                                <option value="PERFECTO" selected>PERFECTO</option>
+                                <option value="BUENO">BUENO</option>
+                                <option value="REGULAR">REGULAR</option>
+                                <option value="MALO">MALO</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

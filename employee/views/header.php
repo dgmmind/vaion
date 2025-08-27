@@ -37,10 +37,10 @@
         <div class="nav-actions">
             <div class="container">
                 <div class="link">
-                    <a href="#">Dashboard</a>
-                    <a href="#">Create Day</a>
-                    <a href="#">Evaluations</a>
-                    <a href="#">Reports</a>
+                    <a href="#" class="active"> <span class="dgm-icon" icon-data="grid"></span> Dashboard</a>
+                    <a href="#"> <span class="dgm-icon" icon-data="adobe"></span> Create Day</a>
+                    <a href="#"> <span class="dgm-icon" icon-data="alien"></span> Evaluations</a>
+                    <a href="#"> <span class="dgm-icon" icon-data="equals"></span> Reports</a>
 
                 </div>
             </div>

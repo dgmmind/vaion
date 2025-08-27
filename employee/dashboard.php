@@ -114,16 +114,7 @@ $pauseReasons = [
 
     <style>
     /* Grid Section Styles */
-    .grid-section {
-      background-image:
-        linear-gradient(rgba(226, 232, 240, 0.5) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(226, 232, 240, 0.5) 1px, transparent 1px);
-      background-size: 20px 20px;
-      background-position: 0 0;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      padding: 1.5rem;
-    }
+
     
     .dashboard-card {
       background: white;
@@ -153,9 +144,10 @@ $pauseReasons = [
     /* Grid Section Styles */
     .grid-section {
       background-image:
-        linear-gradient(rgba(226, 232, 240, 0.5) 1px, transparent 1px),
+        /*linear-gradient(rgba(226, 232, 240, 0.5) 1px, transparent 1px),
         linear-gradient(90deg, rgba(226, 232, 240, 0.5) 1px, transparent 1px);
-      background-size: 20px 20px;
+      */
+        background-size: 20px 20px;
       background-position: 0 0;
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -210,8 +202,10 @@ $pauseReasons = [
     
     .card-header {
       padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
       background: #f8fafc;
+      border-radius: 0.5rem;
     }
     
     .card-header h1, 

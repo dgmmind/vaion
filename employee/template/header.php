@@ -27,7 +27,7 @@ $userId = $_SESSION["user_id"];
   <!-- Header -->
   <header class="header">
     <div class="container navbar">
-      <div class="logo">My App</div>
+      <div class="logo">VAION</div>
       <div class="actions" id="actions">
         <div class="dropdown-wrapper">
           <button class="button" data-dropdown="notificationDropdown"><i data-feather="bell"></i></button>

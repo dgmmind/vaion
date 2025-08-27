@@ -125,12 +125,18 @@ switch ($action) {
         $checked = ($item === "PERFECTO");
 
         // Filtro único usando evaluation_id + day_id
-        // Update using the correct filter format as an array
-        $updateResult = $supabase->update(
-            "evaluations",
-            ["evaluation_id" => $evaluation_id, "day_id" => $day_id],
-            ["item" => $item, "checked" => $checked, "updated_at" => date('Y-m-d H:i:s')]
-        );
+        $filter = [
+            'evaluation_id' => $evaluation_id,
+            'day_id' => $day_id
+        ];
+        
+        $data = [
+            'item' => $item, 
+            'checked' => $checked ? 'true' : 'false',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        
+        $updateResult = $supabase->update("evaluations", $data, $filter);
 
         if ($updateResult["status"] === 200) {
             echo json_encode([

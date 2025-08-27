@@ -34,7 +34,7 @@ body {
 .logo {
   font-size: 18px;
   font-weight: 700;
-  color: #64748b;
+  color: #D3D5DE;
   letter-spacing: -0.025em;
 }
 
@@ -51,7 +51,7 @@ body {
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
-  color: #64748b;
+  color: #D3D5DE;
   display: flex;
   align-items: center;
   justify-content: center;

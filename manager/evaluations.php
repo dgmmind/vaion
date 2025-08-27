@@ -289,8 +289,26 @@ class EvaluationApp {
 
                     this.updateEmployeeAverage(row);
                     this.updateCategoryProgress();
+                    
+                    // mostrar mensaje de exito arriba a la derecha ventana pequeña 
+                    if (res.success || res.success === true ) {
+                        Swal.fire({
+                            title: "Guardado exitosamente!",
+                            icon: "success",
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+
                 } else {
-                    alert("Error al guardar: " + (res.error || "desconocido"));
+                    Swal.fire({
+                        title: "Error al guardar!",
+                        icon: "error",
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     select.value = checkbox.checked ? "PERFECTO" : select.value; 
                 }
             } catch (err) {

@@ -22,6 +22,8 @@ $userId = $_SESSION["user_id"];
   <title>Minimal Modern Header</title>
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="sweetalert2.min.css">
 </head>
 <body>
   <!-- Header -->

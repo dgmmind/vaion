@@ -14,6 +14,11 @@ if (!isset($_SESSION["manager_id"])) {
 
 $managerId = $_SESSION["manager_id"];
 ?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,12 +27,14 @@ $managerId = $_SESSION["manager_id"];
   <title>Minimal Modern Header</title>
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
   <!-- Header -->
   <header class="header">
     <div class="container navbar">
-      <div class="logo">My App</div>
+      <div class="logo">VAION</div>
       <div class="actions" id="actions">
         <div class="dropdown-wrapper">
           <button class="button" data-dropdown="notificationDropdown"><i data-feather="bell"></i></button>

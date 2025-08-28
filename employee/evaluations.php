@@ -67,7 +67,7 @@ $categorias = array_keys($category_item);
 
 <!-- Main Content -->
 <main class="main-content">
-  <div class="container card">
+  <div class="container">
     <!-- Selector de tipo de búsqueda -->
     <div class="day-selector" style="margin-bottom: 20px;">
       <form method="GET" style="display: flex; gap: 16px; align-items: end; flex-wrap: wrap;">

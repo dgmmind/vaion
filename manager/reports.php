@@ -124,7 +124,7 @@ $categories = array_keys($categoryItems);
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="container card">
+    <div class="container">
       <div class="header-card">
         <h1 class="title">Reportes</h1>
         <p class="description">Genera reportes de evaluaciones por período y empleado</p>

@@ -19,15 +19,65 @@ $pauseReasons = [
   <!-- Main Content -->
   <main class="main-content">
     <div class="container">
-      <div class="dashboard-card">
-        <!-- Main grid section with background -->
-        <div class="grid-section">
-        <!-- Header -->
+      <div class="card">
+        <!-- Dashboard Header -->
         <div class="card-header">
           <div class="d-flex justify-between items-center">
             <div>
               <h1 class="title">Bienvenido, <?= htmlspecialchars($_SESSION['name'] ?? '') ?>!</h1>
               <p class="text-gray-600">Sistema de control de pausas</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Title and Status -->
+        <div class="section-title">
+          <div class="section-title-header">
+            <h2>Dashboard</h2>
+          </div>
+          <div class="status-container">
+            <!-- Recording Indicator -->
+            <div class="status-indicator status-rec">
+              <div class="status-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <div class="status-pulse"></div>
+              </div>
+              <span>REC</span>
+            </div>
+            
+            <!-- Microphone Indicator -->
+            <div class="status-indicator status-mic">
+              <div class="status-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                </svg>
+                <div class="status-pulse"></div>
+              </div>
+              <span>MIC</span>
+            </div>
+            
+            <!-- Live Monitoring -->
+            <div class="status-indicator status-live">
+              <div class="status-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <div class="status-pulse"></div>
+              </div>
+              <span>LIVE</span>
+            </div>
+            
+            <!-- User Status -->
+            <div class="status-indicator status-user">
+              <div class="status-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <div class="status-pulse"></div>
+              </div>
+              <span>ON</span>
             </div>
           </div>
         </div>
@@ -112,439 +162,7 @@ $pauseReasons = [
       </div>
     </div>
 
-    <style>
-    /* Grid Section Styles */
-
-    
-    .dashboard-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .dashboard-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      margin: 20px 0;
-    }
-
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .right-column {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    /* Grid Section Styles */
-    .grid-section {
-      background-image:
-        /*linear-gradient(rgba(226, 232, 240, 0.5) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(226, 232, 240, 0.5) 1px, transparent 1px);
-      */
-        background-size: 20px 20px;
-      background-position: 0 0;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      padding: 1.5rem;
-    }
-    
-    .dashboard-section {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      border: 1px solid #e2e8f0;
-      margin-bottom: 1.5rem;
-    }
-    
-    .dashboard-section:last-child {
-      margin-bottom: 0;
-    }
-    
-    .section-header {
-      padding: 1rem 1.25rem;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .section-header h2 {
-      margin: 0;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #1e293b;
-    }
-    
-    .section-body {
-      padding: 1.25rem;
-      background: white;
-      border-radius: 0 0 8px 8px;
-    }
-    
-    .pauses-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-    
-    .card {
-      margin-bottom: 1.5rem;
-      background: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    
-    .card-header {
-      padding: 1.25rem 1.5rem;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-      border-radius: 0.5rem;
-    }
-    
-    .card-header h1, 
-    .card-header h2 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #1e293b;
-    }
-    
-    .card-body {
-      padding: 1.5rem;
-    }
-    
-    .pauses-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-      padding: 0.5rem;
-    }
-    
-    .pause-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      transition: all 0.2s ease;
-    }
-    
-    .pause-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    }
-    
-    .pause-card.active {
-      border-left: 4px solid #3b82f6;
-    }
-    
-    .switch-container {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1.75rem;
-    }
-    
-    .status-text {
-      font-size: 0.875rem;
-      color: #64748b;
-      font-weight: 500;
-    }
-    
-    .form-row {
-      display: flex;
-      gap: 2rem;
-      align-items: flex-start;
-    }
-    
-    .form-group {
-      flex: 1;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: #475569;
-      font-size: 0.875rem;
-    }
-    
-    .form-control {
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.375rem;
-      background-color: white;
-      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    
-    .form-control:focus {
-      border-color: #93c5fd;
-      outline: 0;
-      box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.5);
-    }
-    
-    /* Switch styles */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-    }
-    
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #e2e8f0;
-      transition: .4s;
-      border-radius: 34px;
-    }
-    
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-    
-    input:checked + .slider {
-      background-color: #3b82f6;
-    }
-    
-    input:focus + .slider {
-      box-shadow: 0 0 1px #3b82f6;
-    }
-    
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-
-    /* Estilos para el nuevo diseño */
-    .pause-status-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .current-status {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background: #f8fafc;
-      border-radius: 0.5rem;
-      border: 1px solid #e2e8f0;
-    }
-
-    .status-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .status-text {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #1e293b;
-    }
-
-    .reason-text {
-      font-size: 0.875rem;
-      color: #64748b;
-    }
-
-    .toggle-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .pause-form {
-      padding: 1rem;
-      background: white;
-      border-radius: 0.5rem;
-      border: 1px solid #e2e8f0;
-    }
-
-    .active-pause-indicator {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1rem;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 0.5rem;
-      color: #dc2626;
-      font-weight: 500;
-    }
-
-    .active-pause-indicator .pause-icon {
-      width: 1.25rem;
-      height: 1.25rem;
-      stroke-width: 2;
-    }
-
-    .pauses-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .pause-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1rem;
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.5rem;
-      transition: all 0.2s ease;
-    }
-
-    .pause-item:hover {
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .pause-icon.completed {
-      width: 2rem;
-      height: 2rem;
-      background: #374151;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .pause-icon.completed i {
-      width: 1rem;
-      height: 1rem;
-      stroke-width: 3;
-    }
-
-    .pause-icon.active {
-      width: 2rem;
-      height: 2rem;
-      background: #dc2626;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .pause-icon.active i {
-      width: 1rem;
-      height: 1rem;
-      stroke-width: 3;
-    }
-
-    .pause-item.active {
-      border-color: #fecaca;
-      background: #fef2f2;
-    }
-
-    .pause-details {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .pause-reason {
-      font-weight: 600;
-      color: #1e293b;
-      font-size: 1rem;
-    }
-
-    .pause-times {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.875rem;
-    }
-
-    .time-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .time-label {
-      color: #94a3b8;
-      min-width: 3rem;
-    }
-
-    .time-value {
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .pause-duration {
-      font-weight: 600;
-      color: #374151;
-      font-size: 0.875rem;
-      align-self: flex-start;
-      margin-top: 0.25rem;
-    }
-
-    .pause-duration.active {
-      color: #dc2626;
-    }
-
-    .view-more-btn {
-      width: 100%;
-      margin-top: 1rem;
-      padding: 0.75rem;
-      text-align: center;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #3b82f6;
-      background: transparent;
-      border: 1px solid #3b82f6;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .view-more-btn:hover {
-      background: #3b82f6;
-      color: white;
-    }
-
-    .free-area {
-      min-height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .free-area i {
-      color: #9ca3af;
-    }
-    </style>
+    <!-- CSS optimizado incluido en el header -->
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -630,10 +248,11 @@ $pauseReasons = [
           const activePauseItem = document.createElement('div');
           activePauseItem.className = 'pause-item active';
           activePauseItem.innerHTML = `
+            <div class="pause-item-content">
             <div class="pause-icon active">
               <i data-feather="pause"></i>
             </div>
-            <div class="pause-details">
+              <div class="pause-item-details">
               <div class="pause-reason">${pauseData.reason || 'Sin motivo especificado'}</div>
               <div class="pause-times">
                 <div class="time-row">
@@ -646,8 +265,11 @@ $pauseReasons = [
                 </div>
               </div>
             </div>
+            </div>
+            <div class="pause-item-actions">
             <div class="pause-duration active">
               En curso
+              </div>
             </div>
           `;
           
@@ -764,10 +386,11 @@ $pauseReasons = [
           
           pauseCard.className = 'pause-item';
           pauseCard.innerHTML = `
+            <div class="pause-item-content">
             <div class="pause-icon completed">
               <i data-feather="check"></i>
             </div>
-            <div class="pause-details">
+              <div class="pause-item-details">
               <div class="pause-reason">${pause.reason}</div>
               <div class="pause-times">
                 <div class="time-row">
@@ -780,8 +403,11 @@ $pauseReasons = [
                 </div>
               </div>
             </div>
+            </div>
+            <div class="pause-item-actions">
             <div class="pause-duration">
               ${formatDuration(duration)}
+              </div>
             </div>
           `;
           

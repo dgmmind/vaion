@@ -69,40 +69,7 @@ $managerId = $_SESSION["manager_id"];
     </div>
   </header>
 
-  <div class="section-title container" style="display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <h2><?php 
-        $currentPage = basename($_SERVER['PHP_SELF']);
-        switch($currentPage) {
-          case 'dashboard.php':
-            echo 'Dashboard';
-            break;
-          case 'create_day.php':
-            echo 'Create Day';
-            break;
-          case 'evaluations.php':
-            echo 'Evaluations';
-            break;
-          case 'reports.php':
-            echo 'Reports';
-            break;
-          default:
-            echo 'Dashboard';
-        }
-      ?></h2>
-      <span id="pausedBadge" style="display: none; background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; align-items: center; gap: 4px;">
-        <i data-feather="pause" style="width: 14px; height: 14px; stroke-width: 3;"></i>
-        <span>EN PAUSA</span>
-      </span>
-    </div>
-    <div class="switch-container" style="display: flex; align-items: center; gap: 10px;">
-      <span style="font-size: 14px; color: #64748b;">Pausar sistema</span>
-      <label class="switch">
-        <input type="checkbox" id="systemPauseSwitch">
-        <span class="slider round"></span>
-      </label>
-    </div>
-  </div>
+
 
   <!-- Navigation Tabs -->
   <nav class="nav-container">

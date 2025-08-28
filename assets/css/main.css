@@ -346,16 +346,113 @@ svg { width: 16px; height: 16px; }
 .status-user .status-pulse { background: #8b5cf6; }
 
 /* Content */
-.main-content { width: 100%; margin: 24px auto; }
-
-.card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  padding: 16px;
-  min-height: 400px;
-  transition: box-shadow 0.2s ease;
+.main-content { 
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
 }
+
+/* Ensure content containers are properly centered */
+.content-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Dashboard content centering */
+.dashboard-content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Flexbox utilities */
+.d-flex {
+  display: flex;
+}
+
+/* ===== SECTION TITLE INSIDE CARD ===== */
+
+/* Section title when inside a card */
+.card .section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  margin: 0;
+}
+
+.card .section-title .section-title-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card .section-title h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.card .section-title .status-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.card .section-title .switch-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.text-gray-600 {
+  color: #6b7280;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Card styles consolidated with optimized versions below */
 
 .section-title { padding-top: 40px; padding-bottom: 10px; }
 
@@ -392,58 +489,14 @@ svg { width: 16px; height: 16px; }
   }
 
   .button { width: 100%; justify-content: flex-start; gap: 12px; padding: 10px 12px; }
-  .main-content { margin: 16px auto; padding: 0 16px; }
-  .card { padding: 24px; }
+  .main-content { 
+    width: 95%; 
+    margin: 16px auto; 
+    padding: 0 8px; 
+  }
+  /* Card padding consolidated with optimized versions below */
 }
-    /* Switch styles */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-  }
-
-  .switch input { 
-      opacity: 0;
-      width: 0;
-      height: 0;
-  }
-
-  .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
-  }
-
-  .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-  }
-
-  .switch input:checked + .slider {
-      background-color: #3b82f6;
-  }
-
-  .switch input:focus + .slider {
-      box-shadow: 0 0 1px #3b82f6;
-  }
-
-  .switch input:checked + .slider:before {
-      transform: translateX(26px);
-  }
+         /* Switch styles consolidated with optimized versions below */
 
   .data-table {
     overflow-x: auto;
@@ -594,129 +647,796 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 
-.progress-section {
-  margin-top: 30px;
-  padding: 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background-color: #ffffff;
-  /* sutil cuadrícula */
-  background-image:
-    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: 0 0;
-  overflow: hidden;
-}
+/* Progress section styles consolidated with optimized versions below */
 
-.progress-section h3 {
-  margin-bottom: 15px;
-}
+/* All dashboard styles consolidated below */
 
-.progress-grid {
-  display: flex;
-  flex-direction: column; /* lista vertical */
-  gap: 12px;
-  margin-top: 15px;
-}
+/* ===== DASHBOARD OPTIMIZED STYLES ===== */
 
-/* Modificadores para layouts en tarjetas del dashboard */
-.progress-grid.grid-3, .progress-grid.grid-2 {
-  display: grid;
-}
-.progress-grid.grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-.progress-grid.grid-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
+/* ===== COMMON STYLES ===== */
 
-@media (max-width: 900px) {
-  .progress-grid.grid-3 { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 640px) {
-  .progress-grid.grid-3, .progress-grid.grid-2 { grid-template-columns: 1fr; }
-}
-
-.progress-card {
-  flex: 1;
-  width: 100%;
-  min-width: 200px;
-  padding: 15px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+/* Section Header - Reduced padding and margins */
+.section-header {
+  padding: 0.5rem 0.75rem; /* Reduced from 1rem 1.25rem */
   background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 0.5rem; /* Added small margin for separation */
 }
 
-.progress-card h4 {
-  margin: 0 0 10px 0;
-  color: #374151;
+.section-header h2 {
+  margin: 0;
+  font-size: 1rem; /* Reduced from 1.125rem */
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2; /* Tighter line height */
 }
 
-/* Header dentro de la tarjeta para título + insignia */
-.progress-card .card-header {
+/* Section Body - Reduced padding */
+.section-body {
+  padding: 0.75rem; /* Reduced from 1.25rem */
+  background: white;
+  border-radius: 0 0 6px 6px; /* Slightly reduced */
+}
+
+/* Dashboard Section - Reduced margins */
+.dashboard-section {
+  background: white;
+  border-radius: 6px; /* Reduced from 8px */
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1rem; /* Reduced from 1.5rem */
+}
+
+.dashboard-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== CARD STYLES (UNIFIED) ===== */
+
+/* Card optimizations */
+.card {
+  margin-bottom: 1rem; /* Reduced from 1.5rem */
+  background: white;
+  border-radius: 6px; /* Reduced from 8px */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+  width: 100%; /* Ensure cards take full width of their container */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+.card-header {
+  padding: 0.75rem 1rem; /* Reduced from 1.25rem 1.5rem */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 6px 6px 0 0; /* Reduced from 8px */
+}
+
+.card-header h1, 
+.card-header h2 {
+  margin: 0;
+  font-size: 1.125rem; /* Reduced from 1.25rem */
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.card-body {
+  padding: 1rem; /* Reduced from 1.5rem */
+  background: white;
+}
+
+/* ===== EMPLOYEE DASHBOARD STYLES ===== */
+
+/* Pause Item - Reorganized with flexbox for better space utilization */
+.pause-item {
+  display: flex;
+  align-items: center; /* Changed from flex-start for better alignment */
+  justify-content: space-between; /* Better space distribution */
+  gap: 0.75rem; /* Reduced from 1rem */
+  padding: 0.75rem; /* Reduced from 1rem */
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px; /* Reduced from 8px */
+  transition: all 0.2s ease;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.pause-item:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateY(-1px); /* Subtle lift effect */
+}
+
+.pause-item.active {
+  border-color: #fecaca;
+  background: #fef2f2;
+  border-left: 3px solid #dc2626; /* Reduced from 4px */
+}
+
+/* Pause Item Content - Flexbox optimization */
+.pause-item-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0; /* Allow flex item to shrink */
 }
 
-/* Insignias */
-.badge {
-  display: inline-flex;
+.pause-item-details {
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+.pause-item-actions {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
+  gap: 0.5rem;
+  flex-shrink: 0; /* Prevent shrinking */
 }
-.badge svg { width: 14px; height: 14px; }
-.badge-gold { background: #f59e0b; }
-.badge-diamond { background: #06b6d4; }
-.badge-silver { background: #94a3b8; }
-.badge-bronze { background: #cd7f32; }
 
-/* Layout dos columnas para empleados (izq) y categorías (der) */
+/* Pause Icon - Optimized sizes */
+.pause-icon.completed,
+.pause-icon.active {
+  width: 1.75rem; /* Reduced from 2rem */
+  height: 1.75rem; /* Reduced from 2rem */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.pause-icon.completed i,
+.pause-icon.active i {
+  width: 0.875rem; /* Reduced from 1rem */
+  height: 0.875rem; /* Reduced from 1rem */
+  stroke-width: 2.5; /* Reduced from 3 */
+}
+
+/* Pause Details - Reduced spacing */
+.pause-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* Reduced from 0.5rem */
+  min-width: 0; /* Allow text truncation */
+}
+
+.pause-reason {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.875rem; /* Reduced from 1rem */
+  line-height: 1.2;
+}
+
+.pause-times {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem; /* Reduced from 0.25rem */
+  font-size: 0.75rem; /* Reduced from 0.875rem */
+}
+
+.time-row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem; /* Reduced from 0.5rem */
+}
+
+.time-label {
+  color: #94a3b8;
+  min-width: 2.5rem; /* Reduced from 3rem */
+  font-size: 0.75rem;
+}
+
+/* Pauses List - Reduced gaps */
+.pauses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Reduced from 0.75rem */
+}
+
+/* Pauses Grid - Optimized spacing */
+.pauses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Reduced from 300px */
+  gap: 0.75rem; /* Reduced from 1rem */
+  padding: 0.375rem; /* Reduced from 0.5rem */
+}
+
+.pause-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px; /* Reduced from 8px */
+  padding: 0.75rem; /* Reduced from 1rem */
+  transition: all 0.2s ease;
+}
+
+.pause-card:hover {
+  transform: translateY(-1px); /* Reduced from -2px */
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,0.1), 0 1px 3px -1px rgba(0,0,0,0.06);
+}
+
+.pause-card.active {
+  border-left: 3px solid #3b82f6; /* Reduced from 4px */
+}
+
+/* Switch Container - Reduced margins */
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Reduced from 1rem */
+  margin-top: 1.25rem; /* Reduced from 1.75rem */
+}
+
+/* Status Text - Reduced font size */
+.status-text {
+  font-size: 0.75rem; /* Reduced from 0.875rem */
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Form Controls - Reduced padding */
+.form-group {
+  margin-bottom: 0.75rem; /* Reduced spacing */
+}
+
+.form-control {
+  padding: 0.5rem 0.75rem; /* Reduced padding */
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+/* Active Pause Indicator - Reduced padding */
+.active-pause-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Reduced from 0.75rem */
+  padding: 0.5rem 0.75rem; /* Reduced padding */
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px; /* Reduced from 8px */
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.1);
+}
+
+.active-pause-indicator .pause-icon {
+  width: 1rem; /* Reduced from 1.25rem */
+  height: 1rem; /* Reduced from 1.25rem */
+  stroke-width: 2;
+}
+
+/* Pause Duration styling */
+.pause-duration {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  background: #f1f5f9;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 3rem;
+  flex-shrink: 0;
+}
+
+.pause-duration.active {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* Time value styling */
+.time-value {
+  color: #475569;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+/* Compact form styling */
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* Switch styling optimization */
+.switch {
+  width: 44px; /* Reduced from 50px */
+  height: 22px; /* Reduced from 24px */
+}
+
+.slider:before {
+  height: 14px; /* Reduced from 16px */
+  width: 14px; /* Reduced from 16px */
+  left: 3px; /* Adjusted from 4px */
+  bottom: 3px; /* Adjusted from 4px */
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(22px); /* Adjusted from 26px */
+}
+
+/* Dashboard content layout - using standard .card styles */
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; /* Reduced from 2rem */
+  margin: 1rem 0; /* Reduced from 20px 0 */
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Reduced from 2rem */
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-section {
+  background-image: linear-gradient(rgba(226, 232, 240, 0.15) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(226, 232, 240, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+  border-radius: 6px; /* Reduced from 8px */
+  border: 1px solid #e2e8f0;
+  padding: 1rem; /* Reduced from 1.5rem */
+}
+
+.pause-status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Reduced from 1rem */
+}
+
+.current-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem; /* Reduced from 1rem */
+  background: #f8fafc;
+  border-radius: 6px; /* Reduced from 8px */
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reason-text {
+  font-size: 0.75rem; /* Reduced from 0.875rem */
+  color: #64748b;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.pause-form {
+  padding: 0.75rem; /* Reduced from 1rem */
+  background: white;
+  border-radius: 6px; /* Reduced from 8px */
+  border: 1px solid #e2e8f0;
+}
+
+.view-more-btn {
+  width: 100%;
+  margin-top: 0.75rem; /* Reduced from 1rem */
+  padding: 0.5rem; /* Reduced from 0.75rem */
+  text-align: center;
+  font-size: 0.75rem; /* Reduced from 0.875rem */
+  font-weight: 500;
+  color: #3b82f6;
+  background: transparent;
+  border: 1px solid #3b82f6;
+  border-radius: 6px; /* Reduced from 8px */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-more-btn:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.free-area {
+  min-height: 150px; /* Reduced from 200px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.free-area i {
+  color: #9ca3af;
+  width: 2rem; /* Reduced from 3rem */
+  height: 2rem; /* Reduced from 3rem */
+}
+
+.free-area p {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* ===== MANAGER DASHBOARD OPTIMIZATIONS ===== */
+
+/* Manager Dashboard Container */
+.container.card {
+  background: white;
+  border-radius: 8px; /* Reduced from default */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin: 1rem 0; /* Reduced margins */
+}
+
+/* Manager Dashboard Card Header */
+.header-card {
+  padding: 0.75rem 1rem; /* Reduced from default */
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.header-card .title {
+  margin: 0 0 0.25rem 0; /* Reduced margins */
+  font-size: 1.125rem; /* Reduced from default */
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.header-card .description {
+  margin: 0 0 0.25rem 0; /* Reduced margins */
+  font-size: 0.875rem; /* Reduced from default */
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.header-card p:last-child {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+/* Progress Columns - Reduced spacing */
 .progress-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  align-items: start;
-}
-@media (max-width: 900px) {
-  .progress-columns { grid-template-columns: 1fr; }
+  gap: 1.5rem; /* Reduced from default */
+  margin: 1rem 0; /* Reduced margins */
 }
 
+/* Progress Section - Reduced padding and margins */
+.progress-section {
+  background: white;
+  border-radius: 6px; /* Reduced from default */
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  margin-bottom: 1rem; /* Reduced from default */
+  padding: 0.75rem; /* Add padding for content */
+}
+
+.progress-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Progress Section Title */
+.progress-section h3 {
+  margin: 0 0 0.75rem 0; /* Reduced margin */
+  font-size: 1rem; /* Reduced font size */
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+/* Progress Section Header - Inherits from .card-header */
+.progress-section .card-header {
+  /* Inherits all styles from .card-header above */
+}
+
+/* Progress Section Body - Inherits from .card-body */
+.progress-section .card-body {
+  /* Inherits all styles from .card-body above */
+}
+
+/* Progress Item - Reduced spacing with proper alignment */
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0; /* Reduced from default */
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.25rem; /* Reduced from default */
+  width: 100%; /* Ensure full width */
+}
+
+.progress-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.progress-item .name {
+  font-size: 0.875rem; /* Reduced from default */
+  font-weight: 500;
+  color: #1e293b;
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+  margin-right: 0.75rem; /* Space between name and stats */
+}
+
+.progress-item .stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Reduced from default */
+  font-size: 0.75rem; /* Reduced from default */
+  color: #64748b;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.progress-item .percent {
+  font-weight: 600;
+  color: #059669;
+  min-width: 2.5rem; /* Reduced from default */
+  text-align: right;
+}
+
+.progress-item .count {
+  color: #64748b;
+  min-width: 2rem; /* Reduced from default */
+  text-align: center;
+}
+
+/* ===== PROGRESS CARD SPECIFIC STYLES ===== */
+
+/* Progress Grid */
+.progress-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Reduced spacing */
+}
+
+/* Progress Card */
+.progress-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px; /* Reduced from default */
+  padding: 0.75rem; /* Reduced padding */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.progress-card:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+/* Progress Card Header */
+.progress-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem; /* Reduced margin */
+  padding: 0; /* Remove padding since card already has it */
+  background: transparent; /* Override card-header background */
+  border: none; /* Remove border */
+  box-shadow: none; /* Remove shadow */
+}
+
+.progress-card .card-header h4 {
+  margin: 0;
+  font-size: 0.875rem; /* Reduced font size */
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem; /* Reduced padding */
+  border-radius: 12px;
+  font-size: 0.75rem; /* Reduced font size */
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.badge i {
+  width: 0.75rem; /* Reduced icon size */
+  height: 0.75rem;
+  stroke-width: 2.5;
+}
+
+.badge-gold {
+  background: #f59e0b;
+}
+
+.badge-diamond {
+  background: #06b6d4;
+}
+
+.badge-silver {
+  background: #6b7280;
+}
+
+.badge-bronze {
+  background: #d97706;
+}
+
+/* Progress Bar Container */
 .progress-bar-container {
   width: 100%;
-  height: 12px;
+  height: 0.75rem; /* Increased height for better visibility */
   background: #e2e8f0;
-  border-radius: 6px;
+  border-radius: 0.375rem; /* Slightly increased for better proportion */
   overflow: hidden;
+  margin: 0.5rem 0; /* Reduced margins */
+  position: relative;
 }
 
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: #3b82f6;
-  transition: width 0.3s;
-  color: #fff;
-  font-size: 10px;
-  text-align: center;
-  line-height: 12px;
-}
-
+/* Employee Progress Bar */
 .employee-progress-bar {
   height: 100%;
-  width: 0%;
-  background: #10b981;
-  transition: width 0.3s;
-  color: #fff;
-  font-size: 10px;
+  background: #059669;
+  border-radius: 0.375rem; /* Increased for better proportion */
+  transition: width 0.3s ease;
+  position: absolute; /* Fixed: Changed from relative to absolute for proper alignment */
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem; /* Increased font size for better readability */
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  min-width: 2rem; /* Increased minimum width for better text display */
+}
+
+/* Category Progress Bar - Specific styling for categories */
+.category-progress-bar {
+  height: 100%;
+  background: #3b82f6; /* Blue color for categories */
+  border-radius: 0.375rem; /* Increased for better proportion */
+  transition: width 0.3s ease;
+  position: absolute; /* Same positioning as employee bars */
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem; /* Increased font size for better readability */
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  min-width: 2rem; /* Increased minimum width for better text display */
+}
+
+/* Reports Progress Bar - For category progress bars in reports page */
+.progress-bar {
+  height: 100%;
+  background: #3b82f6; /* Blue color for categories in reports */
+  border-radius: 0.375rem; /* Increased for better proportion */
+  transition: width 0.3s ease;
+  position: absolute; /* Same positioning as employee bars */
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem; /* Increased font size for better readability */
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  min-width: 2rem; /* Increased minimum width for better text display */
+}
+
+/* Progress Card Description */
+.progress-card .description {
+  font-size: 0.75rem; /* Reduced font size */
+  color: #64748b;
+  margin: 0;
   text-align: center;
-  line-height: 12px;
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Additional space-saving utilities */
+.compact-spacing {
+  margin: 0.25rem 0;
+  padding: 0.25rem 0;
+}
+
+.tight-layout {
+  gap: 0.375rem;
+  margin: 0.375rem 0;
+}
+
+/* Flexbox utilities for better space utilization */
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.flex-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.flex-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.flex-shrink-none {
+  flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Responsive optimizations */
+@media (max-width: 768px) {
+  .section-header {
+    padding: 0.375rem 0.5rem; /* Even smaller on mobile */
+  }
+  
+  .section-body {
+    padding: 0.5rem; /* Smaller on mobile */
+  }
+  
+  .pause-item {
+    padding: 0.5rem; /* Smaller on mobile */
+    gap: 0.5rem;
+  }
+  
+  .pauses-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 0.5rem;
+  }
+  
+  .card-body {
+    padding: 0.75rem; /* Smaller on mobile */
+  }
+  
+  /* Manager Dashboard Mobile */
+  .progress-columns {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 1rem;
+  }
+  
+  .header-card {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .progress-section .card-header {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .progress-section .card-body {
+    padding: 0.5rem;
+  }
 }

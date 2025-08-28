@@ -76,7 +76,7 @@ $categories = array_keys($categoryItems);
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="container card">
+    <div class="container">
       
       <div class="table-container">
         <h3>Días del Manager</h3>

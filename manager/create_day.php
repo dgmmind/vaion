@@ -4,7 +4,7 @@ require_once 'template/header.php';
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="container card">
+    <div class="container">
       <div class="header-card">
         <h1 class="title">Registrar Day</h1>
         <p class="description">Crea un nuevo día para evaluaciones</p>

@@ -7,7 +7,6 @@
     constructor() {
       this.actions = document.getElementById("actions");
       this.tabs = document.querySelectorAll(".tab");
-      this.mobileMenu = document.querySelector(".mobile-menu");
 
         this.initEvents();
       }
@@ -24,9 +23,6 @@
         document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
       }
 
-      toggleMobileMenu() { this.actions.classList.toggle("mobile-open"); }
-      closeMobileMenu() { this.actions.classList.remove("mobile-open"); }
-
       initEvents() {
         document.querySelectorAll(".button[data-dropdown]").forEach(btn => {
           btn.addEventListener("click", e => {
@@ -35,11 +31,8 @@
           });
         });
 
-        this.mobileMenu.addEventListener("click", () => this.toggleMobileMenu());
-
         document.addEventListener("click", e => {
           if(!e.target.closest(".button") && !e.target.closest(".dropdown")) this.closeDropdowns();
-          if(!this.actions.contains(e.target) && !this.mobileMenu.contains(e.target)) this.closeMobileMenu();
         });
       }
     }

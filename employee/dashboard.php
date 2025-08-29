@@ -19,152 +19,131 @@ $pauseReasons = [
   <!-- Main Content -->
   <main class="main-content">
     <div class="container">
-      <div class="card">
-        <!-- Dashboard Header -->
-        <div class="card-header">
-          <div class="d-flex justify-between items-center">
-            <div>
-              <h1 class="title">Bienvenido, <?= htmlspecialchars($_SESSION['name'] ?? '') ?>!</h1>
-              <p class="text-gray-600">Sistema de control de pausas</p>
-            </div>
+     <div class="card">
+       <!-- Header Card -->
+       <div class="header-card">
+        <div class="title">Bienvenido, <?= htmlspecialchars($_SESSION['name'] ?? '') ?>!</div>
+        <div class="description">Sistema de control de pausas</div>
+        
+        <!-- Formulario de Pausa en el Header -->
+        <div class="pause-form-container">
+          <div class="form-group">
+            <label for="pauseReason">Razón de la pausa</label>
+            <select class="form-control" id="pauseReason" required>
+              <option value="">Seleccione una razón</option>
+              <?php foreach ($pauseReasons as $reason): ?>
+                <option value="<?= htmlspecialchars($reason) ?>"><?= htmlspecialchars($reason) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          
+          <div class="switch-container">
+            <label class="switch">
+              <input type="checkbox" id="pauseToggle">
+              <span class="slider round"></span>
+            </label>
+            <span class="switch-label">Switch de Pausa</span>
+          </div>
+          
+          <!-- Indicador de pausa activa -->
+          <div id="activePauseIndicator" class="active-pause-indicator" style="display: none;">
+            <i data-feather="pause" class="pause-icon"></i>
+            <span id="activePauseText">Pausa activa</span>
           </div>
         </div>
+      </div>
 
-        <!-- Section Title and Status -->
-        <div class="section-title">
-          <div class="section-title-header">
-            <h2>Dashboard</h2>
+      <!-- Body Card: Contenido principal -->
+      <div class="body-card">
+        <!-- Status Indicators -->
+        <div class="status-container">
+          <!-- Recording Indicator -->
+          <div class="status-indicator status-rec">
+            <div class="status-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+              <div class="status-pulse"></div>
+            </div>
+            <span>REC</span>
           </div>
-          <div class="status-container">
-            <!-- Recording Indicator -->
-            <div class="status-indicator status-rec">
-              <div class="status-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                <div class="status-pulse"></div>
-              </div>
-              <span>REC</span>
+          
+          <!-- Microphone Indicator -->
+          <div class="status-indicator status-mic">
+            <div class="status-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+              </svg>
+              <div class="status-pulse"></div>
             </div>
-            
-            <!-- Microphone Indicator -->
-            <div class="status-indicator status-mic">
-              <div class="status-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                </svg>
-                <div class="status-pulse"></div>
-              </div>
-              <span>MIC</span>
+            <span>MIC</span>
+          </div>
+          
+          <!-- Live Monitoring -->
+          <div class="status-indicator status-live">
+            <div class="status-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <div class="status-pulse"></div>
             </div>
-            
-            <!-- Live Monitoring -->
-            <div class="status-indicator status-live">
-              <div class="status-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                <div class="status-pulse"></div>
-              </div>
-              <span>LIVE</span>
+            <span>LIVE</span>
+          </div>
+          
+          <!-- User Status -->
+          <div class="status-indicator status-user">
+            <div class="status-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <div class="status-pulse"></div>
             </div>
-            
-            <!-- User Status -->
-            <div class="status-indicator status-user">
-              <div class="status-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                <div class="status-pulse"></div>
-              </div>
-              <span>ON</span>
-            </div>
+            <span>ON</span>
           </div>
         </div>
 
         <!-- Main Content -->
-        <div class="dashboard-content">
-          <!-- Columna Izquierda: Estado de Pausa e Historial -->
-          <div class="left-column">
-            <!-- Sección 1: Estado de Pausa -->
-            <div class="dashboard-section">
-              <div class="section-header">
-                <h2>Estado de Pausa</h2>
-              </div>
-              <div class="section-body">
-                <div class="pause-status-container">
-                  <!-- Estado actual de la pausa -->
-                  <div id="currentPauseStatus" class="current-status">
-                    <div class="status-info">
-                      <span id="pauseStatusText" class="status-text">En línea</span>
-                      <span id="pauseReasonText" class="reason-text"></span>
-                    </div>
-                    <div class="toggle-container">
-                      <label class="switch">
-                        <input type="checkbox" id="pauseToggle">
-                        <span class="slider round"></span>
-                      </label>
-                    </div>
-                  </div>
-                  
-                  <!-- Formulario para iniciar pausa -->
-                  <div id="pauseForm" class="pause-form">
-                    <div class="form-group">
-                      <label for="pauseReason">Razón de la pausa</label>
-                      <select class="form-control" id="pauseReason" required>
-                        <option value="">Seleccione una razón</option>
-                        <?php foreach ($pauseReasons as $reason): ?>
-                          <option value="<?= htmlspecialchars($reason) ?>"><?= htmlspecialchars($reason) ?></option>
-                        <?php endforeach; ?>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <!-- Indicador de pausa activa -->
-                  <div id="activePauseIndicator" class="active-pause-indicator" style="display: none;">
-                    <i data-feather="pause" class="pause-icon"></i>
-                    <span id="activePauseText">Pausa activa</span>
-                  </div>
-                </div>
-              </div>
+        <div class="card-column-two">
+          <!-- Columna Izquierda: Solo Historial -->
+          <div class="column-one">
+            <!-- Header Card: Historial Reciente -->
+            <div class="header-card">
+              <div class="title">Historial Reciente</div>
             </div>
-
-            <!-- Sección 2: Historial Reciente -->
-            <div class="dashboard-section">
-              <div class="section-header">
-                <h2>Historial Reciente</h2>
-              </div>
-              <div class="section-body">
-                <div id="pausesContainer" class="pauses-list">
-                  <!-- Las pausas se cargarán aquí dinámicamente -->
-                </div>
+            <!-- Body Card: Contenido del Historial -->
+            <div class="body-card">
+              <div id="pausesContainer" class="pauses-list">
+                <!-- Las pausas se cargarán aquí dinámicamente -->
               </div>
             </div>
           </div>
 
           <!-- Columna Derecha: Área libre para futuras funcionalidades -->
-          <div class="right-column">
-            <div class="dashboard-section">
-              <div class="section-header">
-                <h2>Área Libre</h2>
-              </div>
-              <div class="section-body">
-                <div class="free-area">
-                  <p class="text-gray-500 text-center py-8">
-                    <i data-feather="plus-circle" class="w-8 h-8 mx-auto mb-2 text-gray-400"></i>
-                    Área disponible para futuras funcionalidades
-                  </p>
-                </div>
+          <div class="column-two">
+            <!-- Header Card: Área Libre -->
+            <div class="header-card">
+              <div class="title">Área Libre</div>
+            </div>
+            <!-- Body Card: Contenido del Área Libre -->
+            <div class="body-card">
+              <div class="free-area">
+                <p class="text-gray-500 text-center py-8">
+                  <i data-feather="plus-circle" class="w-8 h-8 mx-auto mb-2 text-gray-400"></i>
+                  Área disponible para futuras funcionalidades
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </div>
 
     <!-- CSS optimizado incluido en el header -->
 
-    <script>
+  
+  </main>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       const pausesContainer = document.getElementById('pausesContainer');
       let activePauseId = null;
@@ -218,15 +197,11 @@ $pauseReasons = [
         console.log('updatePauseUI llamado:', { isActive, pauseData });
         
         const pauseToggle = document.getElementById('pauseToggle');
-        const pauseStatusText = document.getElementById('pauseStatusText');
-        const pauseReasonText = document.getElementById('pauseReasonText');
         const activePauseIndicator = document.getElementById('activePauseIndicator');
         const activePauseText = document.getElementById('activePauseText');
         
         console.log('Elementos encontrados:', {
           pauseToggle: !!pauseToggle,
-          pauseStatusText: !!pauseStatusText,
-          pauseReasonText: !!pauseReasonText,
           activePauseIndicator: !!activePauseIndicator,
           activePauseText: !!activePauseText
         });
@@ -240,8 +215,6 @@ $pauseReasons = [
           
           // Actualizar el indicador de pausa activa
           activePauseText.textContent = `Pausa activa`;
-          pauseStatusText.textContent = 'En pausa';
-          pauseReasonText.textContent = pauseData.reason || 'Sin motivo especificado';
           activePauseIndicator.style.display = 'block';
           
           // También mostrar la pausa activa en el historial
@@ -291,8 +264,6 @@ $pauseReasons = [
           // Limpiar el estado de pausa
           activePauseId = null;
           pauseToggle.checked = false;
-          pauseStatusText.textContent = 'En línea';
-          pauseReasonText.textContent = '';
           activePauseIndicator.style.display = 'none';
           
           // Remover la pausa activa del historial si existe
@@ -301,8 +272,6 @@ $pauseReasons = [
             activePauseItem.remove();
           }
         }
-        
-
       }
 
       // Load pauses history
@@ -320,13 +289,9 @@ $pauseReasons = [
               // Si no hay pausa activa pero activePauseId no es null, limpiar el estado
               activePauseId = null;
               const pauseToggle = document.getElementById('pauseToggle');
-              const pauseStatusText = document.getElementById('pauseStatusText');
-              const pauseReasonText = document.getElementById('pauseReasonText');
               const activePauseIndicator = document.getElementById('activePauseIndicator');
               
               pauseToggle.checked = false;
-              pauseStatusText.textContent = 'En línea';
-              pauseReasonText.textContent = '';
               activePauseIndicator.style.display = 'none';
             }
           }
@@ -491,14 +456,10 @@ $pauseReasons = [
           console.log('Resultado de verificación de pausa activa:', result);
           
           const pauseToggle = document.getElementById('pauseToggle');
-          const pauseStatusText = document.getElementById('pauseStatusText');
-          const pauseReasonText = document.getElementById('pauseReasonText');
           
           if (result.success && result.pause) {
             // Actualizar UI para pausa activa
             pauseToggle.checked = true;
-            pauseStatusText.textContent = 'Pausa activa';
-            pauseReasonText.textContent = result.pause.reason || '';
             
             // Asegurarse de que el contenedor de pausa activa esté visible
             document.getElementById('activePauseIndicator').style.display = 'block';
@@ -513,8 +474,6 @@ $pauseReasons = [
           } else {
             // Restablecer estado por defecto
             pauseToggle.checked = false;
-            pauseStatusText.textContent = 'Pausa inactiva';
-            pauseReasonText.textContent = ''; // Limpiar la razón
             document.getElementById('activePauseIndicator').style.display = 'none';
             activePauseId = null;
             console.log('No hay pausa activa');
@@ -526,7 +485,6 @@ $pauseReasons = [
           // Reset to default state on error
           const pauseToggle = document.getElementById('pauseToggle');
           pauseToggle.checked = false;
-          document.getElementById('pauseStatusText').textContent = 'Error verificando estado';
           return { success: false, error: error.message };
         }
       }
@@ -545,7 +503,6 @@ $pauseReasons = [
       async function handlePauseToggle() {
         const isStartingPause = this.checked;
         const reason = document.getElementById('pauseReason').value;
-        const pauseStatusText = document.getElementById('pauseStatusText');
         
         // Validar si se está iniciando una pausa sin razón
         if (isStartingPause && !reason.trim()) {
@@ -603,15 +560,11 @@ $pauseReasons = [
             
             // Limpiar la UI inmediatamente
             const pauseToggle = document.getElementById('pauseToggle');
-            const pauseStatusText = document.getElementById('pauseStatusText');
-            const pauseReasonText = document.getElementById('pauseReasonText');
             const activePauseIndicator = document.getElementById('activePauseIndicator');
             
             // Limpiar estado
             activePauseId = null;
             pauseToggle.checked = false;
-            pauseStatusText.textContent = 'En línea';
-            pauseReasonText.textContent = '';
             activePauseIndicator.style.display = 'none';
             
 
@@ -640,8 +593,6 @@ $pauseReasons = [
 
     });
     </script>
-  </main>
-
 <?php
 require_once 'template/footer.php';
 ?>

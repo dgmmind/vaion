@@ -49,88 +49,14 @@ $categoryItems = $category_item ?? [];
 $categories = array_keys($categoryItems);
 ?>
 
-<style>
-.reports-container {
-    margin: 20px 0;
-}
 
-.filter-form {
-    margin: 20px 0;
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-}
-
-.filter-form .form-row {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.filter-form .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.filter-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.filter-form input,
-.filter-form select {
-    padding: 8px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-}
-
-.filter-form select {
-    min-width: 150px;
-}
-
-.filter-form button {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    align-self: end;
-}
-
-.results-section {
-    margin-top: 30px;
-}
-
-.results-title {
-    margin-bottom: 20px;
-}
-
-.no-results {
-    color: #64748b;
-    font-style: italic;
-}
-
-/* Estilo para el texto debajo de la barra de progreso en tablas y tarjetas */
-.progress-text {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 3px;
-}
-</style>
 
   <!-- Main Content -->
   <main class="main-content">
     <div class="container">
-      <div class="header-card">
-        <h1 class="title">Reportes</h1>
-        <p class="description">Genera reportes de evaluaciones por período y empleado</p>
-      </div>
-      
-      <form method="GET" class="filter-form" onsubmit="return validateForm()">
+        <div class="card">
+        <div class="header-card">
+        <form method="GET" class="form form--horizontal form--filters" onsubmit="return validateForm()">
         <div class="form-row">
           <div class="form-group">
             <label>Desde:</label>
@@ -154,10 +80,12 @@ $categories = array_keys($categoryItems);
             </select>
           </div>
 
-          <button type="submit">Filtrar</button>
+          <button type="submit" class="btn btn-primary">Filtrar</button>
         </div>
       </form>
-
+      </div>
+      
+        <div class="body-card">
         <?php if ($dayStart && $dayEnd): ?>
             <div class="results-section">
                 <h3 class="results-title">
@@ -327,6 +255,11 @@ $categories = array_keys($categoryItems);
                 </div>
             </div>
         <?php endif; ?>
+        </div>
+
+       
+        </div>
+
     </div>
 </main>
   

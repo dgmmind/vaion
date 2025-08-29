@@ -68,108 +68,56 @@ $categorias = array_keys($category_item);
 <!-- Main Content -->
 <main class="main-content">
   <div class="container">
-    <!-- Selector de tipo de búsqueda -->
-    <div class="day-selector" style="margin-bottom: 20px;">
-      <form method="GET" style="display: flex; gap: 16px; align-items: end; flex-wrap: wrap;">
-        <div>
-          <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Tipo de búsqueda:</label>
-          <select name="search_type" onchange="toggleSearchFields(this.value)" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; min-width: 150px;">
-            <option value="today" <?= $search_type === 'today' ? 'selected' : '' ?>>Día Actual</option>
-            <option value="range" <?= $search_type === 'range' ? 'selected' : '' ?>>Rango de Fechas</option>
-          </select>
-        </div>
-        
-        <!-- Campos para rango de fechas -->
-        <div id="range-fields" style="display: <?= $search_type === 'range' ? 'flex' : 'none' ?>; gap: 16px;">
-          <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Fecha Inicio:</label>
-            <input type="date" name="start_date" value="<?= htmlspecialchars($start_date ?? '') ?>" 
-                   style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; min-width: 150px;">
+    <div class="card">
+      <!-- Header Card: Filtros de Búsqueda -->
+      <div class="header-card">
+        <div class="title">Filtros de Búsqueda</div>
+        <div class="description">Selecciona el tipo de búsqueda y fechas para ver tus evaluaciones</div>
+        <form method="GET" class="form form--horizontal form--filters">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de búsqueda:</label>
+              <select name="search_type" onchange="toggleSearchFields(this.value)">
+                <option value="today" <?= $search_type === 'today' ? 'selected' : '' ?>>Día Actual</option>
+                <option value="range" <?= $search_type === 'range' ? 'selected' : '' ?>>Rango de Fechas</option>
+              </select>
+            </div>
+            
+            <!-- Campos para rango de fechas -->
+            <div id="range-fields" class="form-row" style="display: <?= $search_type === 'range' ? 'flex' : 'none' ?>;">
+              <div class="form-group">
+                <label>Fecha Inicio:</label>
+                <input type="date" name="start_date" value="<?= htmlspecialchars($start_date ?? '') ?>">
+              </div>
+              <div class="form-group">
+                <label>Fecha Fin:</label>
+                <input type="date" name="end_date" value="<?= htmlspecialchars($end_date ?? '') ?>">
+              </div>
+            </div>
           </div>
-          <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Fecha Fin:</label>
-            <input type="date" name="end_date" value="<?= htmlspecialchars($end_date ?? '') ?>" 
-                   style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; min-width: 150px;">
-          </div>
-        </div>
-        
-        <div>
-          <button type="submit" class="button" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px;">
-            Buscar
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <?php if ($search_type === 'today' && !empty($daysToShow)): ?>
-      <h3>Evaluaciones del Día Actual: <?= htmlspecialchars($today) ?></h3>
-      
-      <?php 
-      $todayEvaluations = $evaluations[array_keys($evaluations)[0]] ?? [];
-      if (!empty($todayEvaluations)): 
-      ?>
-        <div class="data-table tree-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Empleado ID</th>
-                <?php foreach ($categorias as $cat): ?>
-                  <th colspan="2"><?= htmlspecialchars($cat) ?></th>
-                <?php endforeach; ?>
-              </tr>
-              <tr>
-                <th></th>
-                <?php foreach ($categorias as $cat): ?>
-                  <th>Checked</th>
-                  <th>Item</th>
-                <?php endforeach; ?>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><?= htmlspecialchars($user_id) ?></td>
-                <?php foreach ($categorias as $cat):
-                  $eval = $todayEvaluations[$cat] ?? null;
-                  $item = $eval['item'] ?? "";
-                  $checked = $eval['checked'] ?? false;
-                ?>
-                  <td class="checkbox-cell <?= $checked ? 'checked-green' : 'checked-red' ?>">
-                    <label>
-                      <input type="checkbox" disabled <?= $checked ? 'checked' : '' ?>>
-                      <span class="feather-icon" data-feather="<?= $checked ? 'check-square' : 'square' ?>"></span>
-                    </label>
-                  </td>
-                  <td>
-                    <?= htmlspecialchars($item) ?>
-                  </td>
-                <?php endforeach; ?>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      <?php else: ?>
-        <div class="progress-section">
-          <h4>No hay evaluaciones para el día actual</h4>
-          <p style="text-align: center; color: #64748b; margin: 20px 0;">
-            Aún no se han registrado evaluaciones para hoy (<?= htmlspecialchars($today) ?>).
-          </p>
-        </div>
-      <?php endif; ?>
-      
-    <?php elseif ($search_type === 'range' && !empty($daysToShow)): ?>
-      <h3>Evaluaciones del Rango: <?= count($daysToShow) ?> día(s)</h3>
-      
-      <?php foreach ($daysToShow as $day): ?>
-        <div style="margin-bottom: 24px;">
-          <h4 style="margin-bottom: 16px; color: #1f2937; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
-            Día: <?= htmlspecialchars($day['day_date']) ?>
-          </h4>
           
-          <?php 
-          $dayEvaluations = $evaluations[$day['day_id']] ?? [];
-          if (!empty($dayEvaluations)): 
-          ?>
-            <div class="data-table">
+          <div>
+            <button type="submit" class="btn btn-primary">
+              Buscar
+            </button>
+          </div>
+        </form>
+      </div>
+
+          <?php if ($search_type === 'today' && !empty($daysToShow)): ?>
+        <!-- Header Card: Evaluaciones del Día Actual -->
+        <div class="header-card">
+          <div class="title">Evaluaciones del Día Actual</div>
+          <div class="description"><?= htmlspecialchars($today) ?></div>
+        </div>
+        
+        <?php 
+        $todayEvaluations = $evaluations[array_keys($evaluations)[0]] ?? [];
+        if (!empty($todayEvaluations)): 
+        ?>
+          <!-- Body Card: Tabla de Evaluaciones -->
+          <div class="body-card">
+            <div class="data-table tree-wrapper">
               <table>
                 <thead>
                   <tr>
@@ -190,7 +138,7 @@ $categorias = array_keys($category_item);
                   <tr>
                     <td><?= htmlspecialchars($user_id) ?></td>
                     <?php foreach ($categorias as $cat):
-                      $eval = $dayEvaluations[$cat] ?? null;
+                      $eval = $todayEvaluations[$cat] ?? null;
                       $item = $eval['item'] ?? "";
                       $checked = $eval['checked'] ?? false;
                     ?>
@@ -199,50 +147,149 @@ $categorias = array_keys($category_item);
                           <input type="checkbox" disabled <?= $checked ? 'checked' : '' ?>>
                           <span class="feather-icon" data-feather="<?= $checked ? 'check-square' : 'square' ?>"></span>
                         </label>
-                  </td>
-                  <td>
-                    <?= htmlspecialchars($item) ?>
-                  </td>
+                      </td>
+                      <td>
+                        <?= htmlspecialchars($item) ?>
+                      </td>
+                    <?php endforeach; ?>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <?php else: ?>
+          <!-- Body Card: Sin Evaluaciones -->
+          <div class="body-card">
+            <div class="progress-section">
+              <h4>No hay evaluaciones para el día actual</h4>
+              <p style="text-align: center; color: #64748b; margin: 20px 0;">
+                Aún no se han registrado evaluaciones para hoy (<?= htmlspecialchars($today) ?>).
+              </p>
+            </div>
+          </div>
+        <?php endif; ?>
+        
+      <?php elseif ($search_type === 'range' && !empty($daysToShow)): ?>
+        <!-- Header Card: Evaluaciones del Rango -->
+        <div class="header-card">
+          <div class="title">Evaluaciones del Rango</div>
+          <div class="description"><?= count($daysToShow) ?> día(s) seleccionado(s)</div>
+        </div>
+        
+        <!-- Body Card: Tabla Unificada de Evaluaciones -->
+        <div class="body-card">
+          <div class="data-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Empleado ID</th>
+                  <?php foreach ($categorias as $cat): ?>
+                    <th colspan="2"><?= htmlspecialchars($cat) ?></th>
+                  <?php endforeach; ?>
+                </tr>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <?php foreach ($categorias as $cat): ?>
+                    <th>Checked</th>
+                    <th>Item</th>
+                  <?php endforeach; ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($daysToShow as $day): ?>
+                  <?php 
+                  $dayEvaluations = $evaluations[$day['day_id']] ?? [];
+                  if (!empty($dayEvaluations)): 
+                  ?>
+                    <tr>
+                      <td class="date-cell" style="font-weight: 600; color: #1f2937; border-right: 2px solid #e5e7eb;">
+                        <?= htmlspecialchars($day['day_date']) ?>
+                      </td>
+                      <td><?= htmlspecialchars($user_id) ?></td>
+                      <?php foreach ($categorias as $cat):
+                        $eval = $dayEvaluations[$cat] ?? null;
+                        $item = $eval['item'] ?? "";
+                        $checked = $eval['checked'] ?? false;
+                      ?>
+                        <td class="checkbox-cell <?= $checked ? 'checked-green' : 'checked-red' ?>">
+                          <label>
+                            <input type="checkbox" disabled <?= $checked ? 'checked' : '' ?>>
+                            <span class="feather-icon" data-feather="<?= $checked ? 'check-square' : 'square' ?>"></span>
+                          </label>
+                        </td>
+                        <td>
+                          <?= htmlspecialchars($item) ?>
+                        </td>
+                      <?php endforeach; ?>
+                    </tr>
+                  <?php else: ?>
+                    <tr>
+                      <td class="date-cell" style="font-weight: 600; color: #1f2937; border-right: 2px solid #e5e7eb;">
+                        <?= htmlspecialchars($day['day_date']) ?>
+                      </td>
+                      <td colspan="<?= (count($categorias) * 2) + 1 ?>" style="text-align: center; color: #64748b; padding: 16px;">
+                        No hay evaluaciones para este día
+                      </td>
+                    </tr>
+                  <?php endif; ?>
                 <?php endforeach; ?>
-              </tr>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
-      <?php else: ?>
-        <div style="padding: 16px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0;">
-          <p style="text-align: center; color: #64748b; margin: 0;">
-            No hay evaluaciones para este día.
-          </p>
-        </div>
-      <?php endif; ?>
-    </div>
-  <?php endforeach; ?>
   
 <?php elseif ($search_type === 'today' && empty($daysToShow)): ?>
-  <div class="progress-section">
-    <h3>No hay días disponibles para hoy</h3>
-    <p style="text-align: center; color: #64748b; margin: 20px 0;">
-      No se han configurado días de evaluación para la fecha actual (<?= htmlspecialchars($today) ?>).
-    </p>
+  <!-- Header Card: Sin Días Disponibles -->
+  <div class="header-card">
+    <div class="title">No hay días disponibles para hoy</div>
+    <div class="description">No se han configurado días de evaluación para la fecha actual</div>
+  </div>
+  
+  <!-- Body Card: Mensaje de Información -->
+  <div class="body-card">
+    <div class="progress-section">
+      <p style="text-align: center; color: #64748b; margin: 20px 0;">
+        No se han configurado días de evaluación para la fecha actual (<?= htmlspecialchars($today) ?>).
+      </p>
+    </div>
   </div>
   
 <?php elseif ($search_type === 'range' && ($start_date || $end_date) && empty($daysToShow)): ?>
-  <div class="progress-section">
-    <h3>No se encontraron evaluaciones</h3>
-    <p style="text-align: center; color: #64748b; margin: 20px 0;">
-      No hay evaluaciones para el rango de fechas seleccionado.
-    </p>
+  <!-- Header Card: Sin Evaluaciones Encontradas -->
+  <div class="header-card">
+    <div class="title">No se encontraron evaluaciones</div>
+    <div class="description">No hay evaluaciones para el rango de fechas seleccionado</div>
+  </div>
+  
+  <!-- Body Card: Mensaje de Información -->
+  <div class="body-card">
+    <div class="progress-section">
+      <p style="text-align: center; color: #64748b; margin: 20px 0;">
+        No hay evaluaciones para el rango de fechas seleccionado.
+      </p>
+    </div>
   </div>
   
 <?php else: ?>
-  <div class="progress-section">
-    <h3>Selecciona una opción de búsqueda</h3>
-    <p style="text-align: center; color: #64748b; margin: 20px 0;">
-      Elige el tipo de búsqueda que deseas realizar arriba.
-    </p>
+  <!-- Header Card: Selecciona Opción -->
+  <div class="header-card">
+    <div class="title">Selecciona una opción de búsqueda</div>
+    <div class="description">Elige el tipo de búsqueda que deseas realizar</div>
+  </div>
+  
+  <!-- Body Card: Mensaje de Información -->
+  <div class="body-card">
+    <div class="progress-section">
+      <p style="text-align: center; color: #64748b; margin: 20px 0;">
+        Elige el tipo de búsqueda que deseas realizar arriba.
+      </p>
+    </div>
   </div>
 <?php endif; ?>
 
+    </div>
   </div>
 </main>
 

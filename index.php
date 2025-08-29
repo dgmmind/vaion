@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
             
-            <form method="POST" action="" class="login-form">
+            <form method="POST" action="" class="form form--login">
                 <div class="form-group">
                     <label for="username">Usuario</label>
                     <input type="text" id="username" name="username" required autofocus placeholder="Ingresa tu usuario">
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" id="password" name="password" required placeholder="••••••••">
                 </div>
                 
-                <button type="submit" class="login-btn">
+                <button type="submit" class="btn btn-primary btn-block">
                     Continuar
                 </button>
             </form>

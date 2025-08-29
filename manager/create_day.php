@@ -7,23 +7,22 @@ require_once 'template/header.php';
     <div class="container">
       <div class="card">
         <div class="header-card">
-          <h1 class="title">Registrar Day</h1>
-          <p class="description">Crea un nuevo día para evaluaciones</p>
+        <form id="dayForm" class="form">
+                <div class="form-group">
+                  <label>Fecha del día:</label>
+                  <input type="date" id="day_date" name="day_date" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Crear día
+                </button>
+              </form>
         </div>
         
         <div class="body-card">
           <div class="card-column-two">
             <!-- Left Column - Form -->
             <div class="column-one">
-              <form id="dayForm" class="day-form">
-                <div>
-                  <label>Fecha del día:</label>
-                  <input type="date" id="day_date" name="day_date" required>
-                </div>
-                <button type="submit">
-                  Crear día
-                </button>
-              </form>
+             
 
               <!-- Current Week Section -->
               <div class="week-section">

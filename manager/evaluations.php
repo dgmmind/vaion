@@ -81,16 +81,19 @@ $categories = array_keys($categoryItems);
       <div class="card">
         <div class="header-card">
             <h3>Días del Manager</h3>
-          <form method="GET" class="day-selector">
-            <select name="day_id" onchange="this.form.submit()">
-                <option value="">Selecciona un día</option>
-                <?php foreach ($days as $day): ?>
-                    <option value="<?= htmlspecialchars($day['day_id']) ?>"
-                        <?= $dayId == $day['day_id'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($day['day_date']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+          <form method="GET" class="form form--horizontal">
+            <div class="form-group">
+              <label>Seleccionar día:</label>
+              <select name="day_id" onchange="this.form.submit()">
+                  <option value="">Selecciona un día</option>
+                  <?php foreach ($days as $day): ?>
+                      <option value="<?= htmlspecialchars($day['day_id']) ?>"
+                          <?= $dayId == $day['day_id'] ? 'selected' : '' ?>>
+                          <?= htmlspecialchars($day['day_date']) ?>
+                      </option>
+                  <?php endforeach; ?>
+              </select>
+            </div>
           </form>
         </div>
         <div class="body-card">

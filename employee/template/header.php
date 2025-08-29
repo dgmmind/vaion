@@ -59,7 +59,7 @@ $userId = $_SESSION["user_id"];
           </div>
         </div>
       </div>
-      <button class="mobile-menu"><i data-feather="menu"></i></button>
+
     </div>
   </header>
 

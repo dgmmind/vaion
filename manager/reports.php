@@ -209,9 +209,9 @@ $categories = array_keys($categoryItems);
                     </div>
                 <?php endif; ?>
 
-                <div class="progress-columns">
+                <div class="card-column-two">
                     <!-- Empleados a la izquierda -->
-                    <div class="progress-section" data-section="employees">
+                    <div class="column-one" data-section="employees">
                         <h3>Progreso por Empleado</h3>
                         <div class="progress-grid">
                             <?php 
@@ -273,7 +273,7 @@ $categories = array_keys($categoryItems);
                     </div>
 
                     <!-- Categorías a la derecha -->
-                    <div class="progress-section" data-section="categories">
+                    <div class="column-two" data-section="categories">
                         <h3>Resumen por Categoría</h3>
                         <div class="progress-grid">
                             <?php 

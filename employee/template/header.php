@@ -74,32 +74,3 @@ $userId = $_SESSION["user_id"];
       </div>
     </div>
   </nav>
-
-<style>
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
-}
-
-/* Responsive para indicadores */
-@media (max-width: 640px) {
-  .status-indicators {
-    gap: 12px;
-  }
-  
-  .status-indicator {
-    padding: 4px 8px;
-  }
-  
-  .status-indicator span {
-    font-size: 10px;
-  }
-}
-</style>

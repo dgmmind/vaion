@@ -120,14 +120,8 @@ input,select{
     transition: all 0.3s ease;
     font-weight: 500;
 }
-.section-title{
-    width: 100%;
-    
-}
-.section-title .container{
-    padding-top: 3rem;
-    padding-bottom: 1rem;
-}
+
+/* Section title styles moved to main.css */
 .nav-actions{
     width: 100%;
     border-radius: 0.4rem;

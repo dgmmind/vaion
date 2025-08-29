@@ -34,11 +34,34 @@ switch ($action) {
             echo json_encode(["error" => "Falta day_date"]);
             exit;
         }
+        
+        // Ensure the date is in YYYY-MM-DD format
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $day_date)) {
+            http_response_code(400);
+            echo json_encode(["error" => "Formato de fecha inválido. Use YYYY-MM-DD"]);
+            exit;
+        }
+        
+        // Create a DateTime object to ensure the date is valid
+        $date = DateTime::createFromFormat('Y-m-d', $day_date);
+        if (!$date || $date->format('Y-m-d') !== $day_date) {
+            http_response_code(400);
+            echo json_encode(["error" => "Fecha inválida"]);
+            exit;
+        }
 
         $manager = $users[$manager_id] ?? null;
         if (!$manager) {
             http_response_code(404);
             echo json_encode(["error" => "Manager no encontrado"]);
+            exit;
+        }
+
+        // Verificar si ya existe un día con esta fecha para este manager
+        $existingDay = $supabase->select("days", "day_id", ["manager_id" => $manager_id, "day_date" => $day_date]);
+        if (!empty($existingDay['data'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Ya existe un día registrado para esta fecha"]);
             exit;
         }
 

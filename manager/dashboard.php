@@ -88,34 +88,20 @@ usort($categoryStatsList, function($a, $b) {
   <!-- Main Content -->
   <main class="main-content">
     <div class="container">
+      <div class="card">
       <div class="header-card">
         <h1 class="title">Dashboard</h1>
         <p class="description">Resumen de desempeño semanal (Lun-Vie: <?= htmlspecialchars($dateStart) ?> a <?= htmlspecialchars($dateEnd) ?>)</p>
         <p>Bienvenido, <?= htmlspecialchars($_SESSION['name'] ?? '') ?>!</p>
       </div>
 
-      <!-- Section Title and Controls -->
-      <div class="section-title">
-        <div class="section-title-header">
-          <h2>Dashboard</h2>
-          <span id="pausedBadge" style="display: none; background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; align-items: center; gap: 4px;">
-            <i data-feather="pause" style="width: 14px; height: 14px; stroke-width: 3;"></i>
-            <span>EN PAUSA</span>
-          </span>
-        </div>
-        <div class="switch-container">
-          <span style="font-size: 14px; color: #64748b;">Pausar sistema</span>
-          <label class="switch">
-            <input type="checkbox" id="systemPauseSwitch">
-            <span class="slider round"></span>
-          </label>
-        </div>
-      </div>
+      <div class="body-card">
+       
 
       <?php if (!empty($employeesMap)): ?>
-        <div class="progress-columns">
+        <div class="card-column-two">
           <!-- Empleados izquierda -->
-          <div class="progress-section" data-section="employees">
+          <div class="column-one" data-section="employees">
             <h3>Top Empleados (Semana)</h3>
             <div class="progress-grid">
               <?php foreach ($employeeStats as $idx => $stat): ?>
@@ -145,7 +131,7 @@ usort($categoryStatsList, function($a, $b) {
           </div>
 
           <!-- Categorías derecha -->
-          <div class="progress-section" data-section="categories">
+          <div class="column-two" data-section="categories">
             <h3>Top Categorías (Semana)</h3>
             <div class="progress-grid">
               <?php foreach ($categoryStatsList as $idx => $stat): ?>
@@ -177,6 +163,8 @@ usort($categoryStatsList, function($a, $b) {
       <?php else: ?>
         <p class="description">No hay empleados asignados.</p>
       <?php endif; ?>
+        
+      </div>
     </div>
   </main>
 

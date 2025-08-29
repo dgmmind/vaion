@@ -78,9 +78,10 @@ $categories = array_keys($categoryItems);
   <main class="main-content">
     <div class="container">
       
-      <div class="table-container">
-        <h3>Días del Manager</h3>
-        <form method="GET" class="day-selector">
+      <div class="card">
+        <div class="header-card">
+            <h3>Días del Manager</h3>
+          <form method="GET" class="day-selector">
             <select name="day_id" onchange="this.form.submit()">
                 <option value="">Selecciona un día</option>
                 <?php foreach ($days as $day): ?>
@@ -90,9 +91,11 @@ $categories = array_keys($categoryItems);
                     </option>
                 <?php endforeach; ?>
             </select>
-        </form>
-
-        <?php if ($dayId): ?>
+          </form>
+        </div>
+        <div class="body-card">
+          <div class="table-container">
+            <?php if ($dayId): ?>
         <div class="data-table tree-wrapper">
           <table>
               <thead>
@@ -117,11 +120,10 @@ $categories = array_keys($categoryItems);
                           ?>
                              <td class="checkbox-cell <?= $checked ? 'checked-green' : 'checked-red' ?>">
                                 <label>
-                                    <input type="checkbox" <?= $checked ? 'checked' : '' ?>>
+                                    <input disabled type="checkbox" <?= $checked ? 'checked' : '' ?>>
                                     <span class="feather-icon" data-feather="<?= $checked ? 'check-square' : 'square' ?>"></span>
                                 </label>
                             </td>
-
 
                               <td class="select-cell" data-category="<?= htmlspecialchars($category) ?>" data-evaluation-id="<?= htmlspecialchars($evaluationId) ?>">
                                   <select>
@@ -138,16 +140,14 @@ $categories = array_keys($categoryItems);
               </tbody>
           </table>
         </div>
-
-        <div class="progress-columns">
-          <div class="progress-section" data-section="employees">
+        <div class="card-column-two">
+          <div class="column-one" data-section="employees">
             <h3>Progreso por Empleado</h3>
             <div class="progress-grid">
               <?php foreach ($employeesMap as $employeeId => $employeeName): ?>
                 <div class="progress-card">
                   <div class="card-header">
                     <h4><?= htmlspecialchars($employeeName) ?></h4>
-                    <!-- badge se inserta por JS -->
                   </div>
                   <div class="progress-bar-container">
                     <div class="employee-progress-bar" data-employee-id="<?= htmlspecialchars($employeeId) ?>">0%</div>
@@ -157,14 +157,13 @@ $categories = array_keys($categoryItems);
             </div>
           </div>
 
-          <div class="progress-section" data-section="categories">
+          <div class="column-two" data-section="categories">
             <h3>Progreso por Categoría</h3>
             <div class="progress-grid">
               <?php foreach ($categories as $category): ?>
                 <div class="progress-card">
                   <div class="card-header">
                     <h4><?= htmlspecialchars($category) ?></h4>
-                    <!-- badge se inserta por JS -->
                   </div>
                   <div class="progress-bar-container">
                     <div class="progress-bar" data-category="<?= htmlspecialchars($category) ?>">0%</div>
@@ -175,6 +174,8 @@ $categories = array_keys($categoryItems);
           </div>
         </div>
         <?php endif; ?>
+      </div>
+    </div>
       </div>
     </div>
   </main>
@@ -325,7 +326,7 @@ class EvaluationApp {
 
 // Helpers de ordenamiento: de mayor a menor
 EvaluationApp.prototype.sortCategoryProgress = function() {
-    const grid = document.querySelector('.progress-section[data-section="categories"] .progress-grid');
+    const grid = document.querySelector('.column-two[data-section="categories"] .progress-grid');
     if (!grid) return;
     const cards = Array.from(grid.children);
     cards.sort((a, b) => {
@@ -337,7 +338,7 @@ EvaluationApp.prototype.sortCategoryProgress = function() {
 };
 
 EvaluationApp.prototype.sortEmployeeProgress = function() {
-    const grid = document.querySelector('.progress-section[data-section="employees"] .progress-grid');
+    const grid = document.querySelector('.column-one[data-section="employees"] .progress-grid');
     if (!grid) return;
     const cards = Array.from(grid.children);
     cards.sort((a, b) => {
@@ -379,14 +380,14 @@ function applyBadgesToGrid(grid, type) {
 const _origSortCat = EvaluationApp.prototype.sortCategoryProgress;
 EvaluationApp.prototype.sortCategoryProgress = function() {
     _origSortCat.call(this);
-    const grid = document.querySelector('.progress-section[data-section="categories"] .progress-grid');
+    const grid = document.querySelector('.column-two[data-section="categories"] .progress-grid');
     applyBadgesToGrid(grid, 'categories');
 };
 
 const _origSortEmp = EvaluationApp.prototype.sortEmployeeProgress;
 EvaluationApp.prototype.sortEmployeeProgress = function() {
     _origSortEmp.call(this);
-    const grid = document.querySelector('.progress-section[data-section="employees"] .progress-grid');
+    const grid = document.querySelector('.column-one[data-section="employees"] .progress-grid');
     applyBadgesToGrid(grid, 'employees');
 };
 

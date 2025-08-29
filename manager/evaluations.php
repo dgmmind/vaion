@@ -176,8 +176,6 @@ $categories = array_keys($categoryItems);
         <?php endif; ?>
       </div>
     </div>
-      </div>
-    </div>
   </main>
 
   <script>

@@ -19,7 +19,7 @@ $userId = $_SESSION["user_id"];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minimal Modern Header</title>
+  <title>VAION | Plataforma de Evaluaciones</title>
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="https://unpkg.com/feather-icons"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

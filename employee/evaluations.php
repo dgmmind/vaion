@@ -105,18 +105,18 @@ $categorias = array_keys($category_item);
       </div>
 
           <?php if ($search_type === 'today' && !empty($daysToShow)): ?>
-        <!-- Header Card: Evaluaciones del Día Actual -->
-        <div class="header-card">
-          <div class="title">Evaluaciones del Día Actual</div>
-          <div class="description"><?= htmlspecialchars($today) ?></div>
-        </div>
-        
+       
         <?php 
         $todayEvaluations = $evaluations[array_keys($evaluations)[0]] ?? [];
         if (!empty($todayEvaluations)): 
         ?>
           <!-- Body Card: Tabla de Evaluaciones -->
           <div class="body-card">
+            <div class="table-container">
+              <div class="table-title">
+                <h3 class="title">Evaluaciones del Día Actual</h3>
+                <p class="description"><?= htmlspecialchars($today) ?></p>
+              </div>
             <div class="data-table tree-wrapper">
               <table>
                 <thead>
@@ -125,22 +125,21 @@ $categorias = array_keys($category_item);
                     <?php foreach ($categorias as $cat): ?>
                       <th colspan="2"><?= htmlspecialchars($cat) ?></th>
                     <?php endforeach; ?>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    <?php foreach ($categorias as $cat): ?>
-                      <th>Checked</th>
-                      <th>Item</th>
-                    <?php endforeach; ?>
+                    <th>PROMEDIO</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td><?= htmlspecialchars($user_id) ?></td>
-                    <?php foreach ($categorias as $cat):
+                    <?php 
+                    $totalCategories = 0;
+                    $perfectScores = 0;
+                    foreach ($categorias as $cat):
                       $eval = $todayEvaluations[$cat] ?? null;
                       $item = $eval['item'] ?? "";
                       $checked = $eval['checked'] ?? false;
+                      if ($item === 'PERFECTO') $perfectScores++;
+                      $totalCategories++;
                     ?>
                       <td class="checkbox-cell <?= $checked ? 'checked-green' : 'checked-red' ?>">
                         <label>
@@ -151,10 +150,16 @@ $categorias = array_keys($category_item);
                       <td>
                         <?= htmlspecialchars($item) ?>
                       </td>
-                    <?php endforeach; ?>
+                    <?php endforeach; 
+                    $average = $totalCategories > 0 ? round(($perfectScores / $totalCategories) * 100) : 0;
+                    ?>
+                    <td class="text-center font-weight-bold" style="background-color: #f8fafc;">
+                      <?= $average ?>%
+                    </td>
                   </tr>
                 </tbody>
               </table>
+            </div>
             </div>
           </div>
         <?php else: ?>
@@ -170,31 +175,25 @@ $categorias = array_keys($category_item);
         <?php endif; ?>
         
       <?php elseif ($search_type === 'range' && !empty($daysToShow)): ?>
-        <!-- Header Card: Evaluaciones del Rango -->
-        <div class="header-card">
-          <div class="title">Evaluaciones del Rango</div>
-          <div class="description"><?= count($daysToShow) ?> día(s) seleccionado(s)</div>
-        </div>
+      
         
         <!-- Body Card: Tabla Unificada de Evaluaciones -->
         <div class="body-card">
-          <div class="data-table">
+          <div class="table-container">
+            <div class="table-title">
+              <h3 class="title">Evaluaciones del Rango</h3>
+              <p class="description"><?= count($daysToShow) ?> día(s) seleccionado(s)</p>
+            </div>
+            <div class="data-table">
             <table>
               <thead>
                 <tr>
-                  <th>Fecha</th>
-                  <th>Empleado ID</th>
+                  <th>FECHA</th>
+                  <th>EMPLEADO ID</th>
                   <?php foreach ($categorias as $cat): ?>
                     <th colspan="2"><?= htmlspecialchars($cat) ?></th>
                   <?php endforeach; ?>
-                </tr>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <?php foreach ($categorias as $cat): ?>
-                    <th>Checked</th>
-                    <th>Item</th>
-                  <?php endforeach; ?>
+                  <th>PROMEDIO</th>
                 </tr>
               </thead>
               <tbody>
@@ -208,7 +207,10 @@ $categorias = array_keys($category_item);
                         <?= htmlspecialchars($day['day_date']) ?>
                       </td>
                       <td><?= htmlspecialchars($user_id) ?></td>
-                      <?php foreach ($categorias as $cat):
+                      <?php 
+                      $totalCategories = 0;
+                      $perfectScores = 0;
+                      foreach ($categorias as $cat):
                         $eval = $dayEvaluations[$cat] ?? null;
                         $item = $eval['item'] ?? "";
                         $checked = $eval['checked'] ?? false;
@@ -219,17 +221,27 @@ $categorias = array_keys($category_item);
                             <span class="feather-icon" data-feather="<?= $checked ? 'check-square' : 'square' ?>"></span>
                           </label>
                         </td>
-                        <td>
-                          <?= htmlspecialchars($item) ?>
+                          <td class="select-cell">
+                            <?php 
+                            $item = $eval ? $eval['item'] : 'N/A';
+                            if ($item === 'PERFECTO') $perfectScores++;
+                            $totalCategories++;
+                            echo htmlspecialchars($item); 
+                            ?>
+                          </td>
+                        <?php endforeach; 
+                        $average = $totalCategories > 0 ? round(($perfectScores / $totalCategories) * 100) : 0;
+                        ?>
+                        <td class="text-center font-weight-bold" style="background-color: #f8fafc;">
+                          <?= $average ?>%
                         </td>
-                      <?php endforeach; ?>
                     </tr>
                   <?php else: ?>
                     <tr>
                       <td class="date-cell" style="font-weight: 600; color: #1f2937; border-right: 2px solid #e5e7eb;">
                         <?= htmlspecialchars($day['day_date']) ?>
                       </td>
-                      <td colspan="<?= (count($categorias) * 2) + 1 ?>" style="text-align: center; color: #64748b; padding: 16px;">
+                      <td colspan="<?= (count($categorias) * 2) + 2 ?>" style="text-align: center; color: #64748b; padding: 16px;">
                         No hay evaluaciones para este día
                       </td>
                     </tr>
@@ -237,6 +249,7 @@ $categorias = array_keys($category_item);
                 <?php endforeach; ?>
               </tbody>
             </table>
+          </div>
           </div>
         </div>
   

@@ -50,219 +50,215 @@ $categories = array_keys($categoryItems);
 ?>
 
 
-
   <!-- Main Content -->
   <main class="main-content">
     <div class="container">
-        <div class="card">
+      <div class="card">
         <div class="header-card">
-        <form method="GET" class="form form--horizontal form--filters" onsubmit="return validateForm()">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Desde:</label>
-            <input type="date" id="day_start" name="day_start" value="<?= htmlspecialchars($dayStart) ?>" onchange="updateDayEndMin()">
-          </div>
+          <form method="GET" class="form form--horizontal form--filters" onsubmit="return validateForm()">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Desde:</label>
+                <input type="date" id="day_start" name="day_start" value="<?= htmlspecialchars($dayStart) ?>" onchange="updateDayEndMin()">
+              </div>
 
-          <div class="form-group">
-            <label>Hasta:</label>
-            <input type="date" id="day_end" name="day_end" value="<?= htmlspecialchars($dayEnd) ?>">
-          </div>
+              <div class="form-group">
+                <label>Hasta:</label>
+                <input type="date" id="day_end" name="day_end" value="<?= htmlspecialchars($dayEnd) ?>">
+              </div>
 
-          <div class="form-group">
-            <label>Empleado:</label>
-            <select name="employee_id">
-              <option value="">Todos</option>
-              <?php foreach ($employeesMap as $id => $name): ?>
-                <option value="<?= $id ?>" <?= $selectedEmployee == $id ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($name) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <button type="submit" class="btn btn-primary">Filtrar</button>
-        </div>
-      </form>
-      </div>
-      
-        <div class="body-card">
-        <?php if ($dayStart && $dayEnd): ?>
-            <div class="results-section">
-                <h3 class="results-title">
-                    <?php if ($selectedEmployee): ?>
-                        Resultados del Empleado: <?= htmlspecialchars($employeesMap[$selectedEmployee]) ?> 
-                        (<?= htmlspecialchars($dayStart) ?> - <?= htmlspecialchars($dayEnd) ?>)
-                    <?php else: ?>
-                        Resultados del Período: <?= htmlspecialchars($dayStart) ?> - <?= htmlspecialchars($dayEnd) ?>
-                    <?php endif; ?>
-                </h3>
-                
-                <?php if (empty($evaluations)): ?>
-                    <p class="no-results">No se encontraron evaluaciones para el período seleccionado.</p>
-                <?php else: ?>
-                    <div class="data-table tree-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Empleado</th>
-                                    <?php foreach ($categories as $category): ?>
-                                        <th><?= htmlspecialchars($category) ?></th>
-                                    <?php endforeach; ?>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                    // Si se seleccionó un empleado específico, mostrar solo ese en la tabla
-                                    $employeesForTable = $selectedEmployee ? [$selectedEmployee => $evaluations[$selectedEmployee] ?? []] : $evaluations;
-                                ?>
-                                <?php foreach ($employeesForTable as $employeeId => $employeeEvals): ?>
-                                    <tr>
-                                        <td class="employee-name"><?= htmlspecialchars($employeesMap[$employeeId]) ?></td>
-                                        <?php foreach ($categories as $category): 
-                                            $categoryEvals = $employeeEvals[$category] ?? [];
-                                            $perfectCount = count(array_filter($categoryEvals, fn($item) => $item === "PERFECTO"));
-                                            $percent = count($categoryEvals) > 0 ? round($perfectCount / count($categoryEvals) * 100) : 0;
-                                        ?>
-                                            <td>
-                                                <div class="progress-bar-container">
-                                                    <div class="progress-bar" style="width: <?= $percent ?>%;"><?= $percent ?>%</div>
-                                                </div>
-                                                <div class="progress-text"><?= $perfectCount ?>/<?= count($categoryEvals) ?></div>
-                                            </td>
-                                        <?php endforeach; ?>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
-
-                <div class="card-column-two">
-                    <!-- Empleados a la izquierda -->
-                    <div class="column-one" data-section="employees">
-                        <h3>Progreso por Empleado</h3>
-                        <div class="progress-grid">
-                            <?php 
-                                // Armar y ordenar por porcentaje desc (luego total desc, nombre asc)
-                                $employeesToShow = $selectedEmployee ? [$selectedEmployee => $employeesMap[$selectedEmployee]] : $employeesMap;
-                                $employeeStats = [];
-                                foreach ($employeesToShow as $employeeId => $employeeName) {
-                                    $totalItems = 0; $perfectItems = 0;
-                                    if (!empty($evaluations[$employeeId])) {
-                                        foreach ($evaluations[$employeeId] as $category => $items) {
-                                            $totalItems += count($items);
-                                            $perfectItems += count(array_filter($items, fn($item) => $item === "PERFECTO"));
-                                        }
-                                    }
-                                    $employeeProgress = $totalItems > 0 ? round($perfectItems / $totalItems * 100) : 0;
-                                    $employeeStats[] = [
-                                        'id' => $employeeId,
-                                        'name' => $employeeName,
-                                        'percent' => $employeeProgress,
-                                        'perfect' => $perfectItems,
-                                        'total' => $totalItems,
-                                    ];
-                                }
-                                usort($employeeStats, function($a, $b) {
-                                    if ($b['percent'] !== $a['percent']) return $b['percent'] <=> $a['percent'];
-                                    if ($b['total'] !== $a['total']) return $b['total'] <=> $a['total'];
-                                    return strcmp($a['name'], $b['name']);
-                                });
-                                $empIndex = 0;
-                            ?>
-                            <?php foreach ($employeeStats as $stat): ?>
-                                <?php
-                                    if ($empIndex === 0) { $empBadge = 'badge-gold'; $empIcon = 'award'; $empLabel = '1º'; }
-                                    elseif ($empIndex === 1) { $empBadge = 'badge-diamond'; $empIcon = 'zap'; $empLabel = '2º'; }
-                                    elseif ($empIndex === 2) { $empBadge = 'badge-silver'; $empIcon = 'star'; $empLabel = '3º'; }
-                                    else { $empBadge = 'badge-bronze'; $empIcon = 'award'; $empLabel = ''; }
-                                ?>
-                                <div class="progress-card">
-                                    <div class="card-header">
-                                        <h4><?= htmlspecialchars($stat['name']) ?></h4>
-                                        <span class="badge <?= $empBadge ?>">
-                                            <i data-feather="<?= $empIcon ?>"></i><?= $empLabel ? ' ' . $empLabel : '' ?>
-                                        </span>
-                                    </div>
-                                    <div class="progress-bar-container">
-                                        <div class="employee-progress-bar" style="width: <?= $stat['percent'] ?>%;"><?= $stat['percent'] ?>%</div>
-                                    </div>
-                                    <div class="description">
-                                        <?php if ($stat['total'] > 0): ?>
-                                            <?= $stat['perfect'] ?> de <?= $stat['total'] ?> perfectos
-                                        <?php else: ?>
-                                            Sin evaluaciones en este período
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <?php $empIndex++; ?>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-
-                    <!-- Categorías a la derecha -->
-                    <div class="column-two" data-section="categories">
-                        <h3>Resumen por Categoría</h3>
-                        <div class="progress-grid">
-                            <?php 
-                                // Construir y ordenar categorías por % desc, luego total desc, nombre asc
-                                $categoryStats = [];
-                                foreach ($categories as $category) {
-                                    $categoryTotal = 0; $categoryPerfect = 0;
-                                    foreach ($evaluations as $employeeEvals) {
-                                        $categoryEvals = $employeeEvals[$category] ?? [];
-                                        $categoryTotal += count($categoryEvals);
-                                        $categoryPerfect += count(array_filter($categoryEvals, fn($item) => $item === "PERFECTO"));
-                                    }
-                                    $categoryPercent = $categoryTotal > 0 ? round($categoryPerfect / $categoryTotal * 100) : 0;
-                                    $categoryStats[] = [
-                                        'name' => $category,
-                                        'percent' => $categoryPercent,
-                                        'perfect' => $categoryPerfect,
-                                        'total' => $categoryTotal,
-                                    ];
-                                }
-                                usort($categoryStats, function($a, $b) {
-                                    if ($b['percent'] !== $a['percent']) return $b['percent'] <=> $a['percent'];
-                                    if ($b['total'] !== $a['total']) return $b['total'] <=> $a['total'];
-                                    return strcmp($a['name'], $b['name']);
-                                });
-                                $catIndex = 0;
-                            ?>
-                            <?php foreach ($categoryStats as $stat): ?>
-                                <?php
-                                    if ($catIndex === 0) { $catBadge = 'badge-gold'; $catIcon = 'award'; $catLabel = '1º'; }
-                                    elseif ($catIndex === 1) { $catBadge = 'badge-diamond'; $catIcon = 'zap'; $catLabel = '2º'; }
-                                    elseif ($catIndex === 2) { $catBadge = 'badge-silver'; $catIcon = 'star'; $catLabel = '3º'; }
-                                    else { $catBadge = 'badge-bronze'; $catIcon = 'award'; $catLabel = ''; }
-                                ?>
-                                <div class="progress-card">
-                                    <div class="card-header">
-                                        <h4><?= htmlspecialchars($stat['name']) ?></h4>
-                                        <span class="badge <?= $catBadge ?>">
-                                            <i data-feather="<?= $catIcon ?>"></i><?= $catLabel ? ' ' . $catLabel : '' ?>
-                                        </span>
-                                    </div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: <?= $stat['percent'] ?>%;"><?= $stat['percent'] ?>%</div>
-                                    </div>
-                                    <div class="description"><?= $stat['perfect'] ?> de <?= $stat['total'] ?> perfectos</div>
-                                </div>
-                                <?php $catIndex++; ?>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
+              <div class="form-group">
+                <label>Empleado:</label>
+                <select name="employee_id">
+                  <option value="">Todos</option>
+                  <?php foreach ($employeesMap as $id => $name): ?>
+                    <option value="<?= $id ?>" <?= $selectedEmployee == $id ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($name) ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
             </div>
-        <?php endif; ?>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+          </form>
         </div>
+        
+        <div class="body-card">
+          <?php if ($dayStart && $dayEnd): ?>
+            <div class="results-section">
+              <h3 class="results-title">
+                <?php if ($selectedEmployee): ?>
+                  Resultados del Empleado: <?= htmlspecialchars($employeesMap[$selectedEmployee]) ?> 
+                  (<?= htmlspecialchars($dayStart) ?> - <?= htmlspecialchars($dayEnd) ?>)
+                <?php else: ?>
+                  Resultados del Período: <?= htmlspecialchars($dayStart) ?> - <?= htmlspecialchars($dayEnd) ?>
+                <?php endif; ?>
+              </h3>
+              
+              <?php if (empty($evaluations)): ?>
+                <p class="no-results">No se encontraron evaluaciones para el período seleccionado.</p>
+              <?php else: ?>
+                <div class="data-table tree-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>EMPLEADO</th>
+                        <?php foreach ($categories as $category): ?>
+                          <th><?= htmlspecialchars($category) ?></th>
+                        <?php endforeach; ?>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php 
+                        // Si se seleccionó un empleado específico, mostrar solo ese en la tabla
+                        $employeesForTable = $selectedEmployee ? [$selectedEmployee => $evaluations[$selectedEmployee] ?? []] : $evaluations;
+                      ?>
+                      <?php foreach ($employeesForTable as $employeeId => $employeeEvals): ?>
+                        <tr>
+                          <td class="employee-name text-left font-weight-bold"><?= htmlspecialchars($employeesMap[$employeeId]) ?></td>
+                          <?php foreach ($categories as $category): 
+                            $categoryEvals = $employeeEvals[$category] ?? [];
+                            $perfectCount = count(array_filter($categoryEvals, fn($item) => $item === "PERFECTO"));
+                            $percent = count($categoryEvals) > 0 ? round($perfectCount / count($categoryEvals) * 100) : 0;
+                          ?>
+                            <td>
+                              <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: <?= $percent ?>%;"><?= $percent ?>%</div>
+                              </div>
+                              <div class="progress-text"><?= $perfectCount ?>/<?= count($categoryEvals) ?></div>
+                            </td>
+                          <?php endforeach; ?>
+                        </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              <?php endif; ?>
 
-       
+              <div class="card-column-two">
+                <!-- Empleados a la izquierda -->
+                <div class="column-one" data-section="employees">
+                  <h3>Progreso por Empleado</h3>
+                  <div class="progress-grid">
+                    <?php 
+                      // Armar y ordenar por porcentaje desc (luego total desc, nombre asc)
+                      $employeesToShow = $selectedEmployee ? [$selectedEmployee => $employeesMap[$selectedEmployee]] : $employeesMap;
+                      $employeeStats = [];
+                      foreach ($employeesToShow as $employeeId => $employeeName) {
+                        $totalItems = 0; $perfectItems = 0;
+                        if (!empty($evaluations[$employeeId])) {
+                          foreach ($evaluations[$employeeId] as $category => $items) {
+                            $totalItems += count($items);
+                            $perfectItems += count(array_filter($items, fn($item) => $item === "PERFECTO"));
+                          }
+                        }
+                        $employeeProgress = $totalItems > 0 ? round($perfectItems / $totalItems * 100) : 0;
+                        $employeeStats[] = [
+                          'id' => $employeeId,
+                          'name' => $employeeName,
+                          'percent' => $employeeProgress,
+                          'perfect' => $perfectItems,
+                          'total' => $totalItems,
+                        ];
+                      }
+                      usort($employeeStats, function($a, $b) {
+                        if ($b['percent'] !== $a['percent']) return $b['percent'] <=> $a['percent'];
+                        if ($b['total'] !== $a['total']) return $b['total'] <=> $a['total'];
+                        return strcmp($a['name'], $b['name']);
+                      });
+                      $empIndex = 0;
+                    ?>
+                    <?php foreach ($employeeStats as $stat): ?>
+                      <?php
+                        if ($empIndex === 0) { $empBadge = 'badge-gold'; $empIcon = 'award'; $empLabel = '1º'; }
+                        elseif ($empIndex === 1) { $empBadge = 'badge-diamond'; $empIcon = 'zap'; $empLabel = '2º'; }
+                        elseif ($empIndex === 2) { $empBadge = 'badge-silver'; $empIcon = 'star'; $empLabel = '3º'; }
+                        else { $empBadge = 'badge-bronze'; $empIcon = 'award'; $empLabel = ''; }
+                      ?>
+                      <div class="progress-card">
+                        <div class="card-header">
+                          <h4><?= htmlspecialchars($stat['name']) ?></h4>
+                          <span class="badge <?= $empBadge ?>">
+                            <i data-feather="<?= $empIcon ?>"></i><?= $empLabel ? ' ' . $empLabel : '' ?>
+                          </span>
+                        </div>
+                        <div class="progress-bar-container">
+                          <div class="employee-progress-bar" style="width: <?= $stat['percent'] ?>%;"><?= $stat['percent'] ?>%</div>
+                        </div>
+                        <div class="description">
+                          <?php if ($stat['total'] > 0): ?>
+                            <?= $stat['perfect'] ?> de <?= $stat['total'] ?> perfectos
+                          <?php else: ?>
+                            Sin evaluaciones en este período
+                          <?php endif; ?>
+                        </div>
+                      </div>
+                      <?php $empIndex++; ?>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+
+                <!-- Categorías a la derecha -->
+                <div class="column-two" data-section="categories">
+                  <h3>Resumen por Categoría</h3>
+                  <div class="progress-grid">
+                    <?php 
+                      // Construir y ordenar categorías por % desc, luego total desc, nombre asc
+                      $categoryStats = [];
+                      foreach ($categories as $category) {
+                        $categoryTotal = 0; $categoryPerfect = 0;
+                        foreach ($evaluations as $employeeEvals) {
+                          $categoryEvals = $employeeEvals[$category] ?? [];
+                          $categoryTotal += count($categoryEvals);
+                          $categoryPerfect += count(array_filter($categoryEvals, fn($item) => $item === "PERFECTO"));
+                        }
+                        $categoryPercent = $categoryTotal > 0 ? round($categoryPerfect / $categoryTotal * 100) : 0;
+                        $categoryStats[] = [
+                          'name' => $category,
+                          'percent' => $categoryPercent,
+                          'perfect' => $categoryPerfect,
+                          'total' => $categoryTotal,
+                        ];
+                      }
+                      usort($categoryStats, function($a, $b) {
+                        if ($b['percent'] !== $a['percent']) return $b['percent'] <=> $a['percent'];
+                        if ($b['total'] !== $a['total']) return $b['total'] <=> $a['total'];
+                        return strcmp($a['name'], $b['name']);
+                      });
+                      $catIndex = 0;
+                    ?>
+                    <?php foreach ($categoryStats as $stat): ?>
+                      <?php
+                        if ($catIndex === 0) { $catBadge = 'badge-gold'; $catIcon = 'award'; $catLabel = '1º'; }
+                        elseif ($catIndex === 1) { $catBadge = 'badge-diamond'; $catIcon = 'zap'; $catLabel = '2º'; }
+                        elseif ($catIndex === 2) { $catBadge = 'badge-silver'; $catIcon = 'star'; $catLabel = '3º'; }
+                        else { $catBadge = 'badge-bronze'; $catIcon = 'award'; $catLabel = ''; }
+                      ?>
+                      <div class="progress-card">
+                        <div class="card-header">
+                          <h4><?= htmlspecialchars($stat['name']) ?></h4>
+                          <span class="badge <?= $catBadge ?>">
+                            <i data-feather="<?= $catIcon ?>"></i><?= $catLabel ? ' ' . $catLabel : '' ?>
+                          </span>
+                        </div>
+                        <div class="progress-bar-container">
+                          <div class="progress-bar" style="width: <?= $stat['percent'] ?>%;"><?= $stat['percent'] ?>%</div>
+                        </div>
+                        <div class="description"><?= $stat['perfect'] ?> de <?= $stat['total'] ?> perfectos</div>
+                      </div>
+                      <?php $catIndex++; ?>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <?php endif; ?>
         </div>
-
+      </div>
     </div>
-</main>
-  
+  </main>
   
   <script>
   function updateDayEndMin() {

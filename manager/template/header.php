@@ -24,7 +24,7 @@ $managerId = $_SESSION["manager_id"];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minimal Modern Header</title>
+  <title>VAION | Plataforma de Evaluaciones</title>
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="https://unpkg.com/feather-icons"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -76,10 +76,12 @@ $managerId = $_SESSION["manager_id"];
     <div class="container">
       <div class="tabs">
         <a href="dashboard.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" data-tab="dashboard"><i data-feather="sidebar"></i> Dashboard</a>
+        <a href="monitoring.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'monitoring.php' ? 'active' : ''; ?>" data-tab="monitoring"><i data-feather="monitor"></i> Monitoring</a>
         <a href="create_day.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'create_day.php' ? 'active' : ''; ?>" data-tab="create-day"><i data-feather="calendar"></i> Create Day</a>
         <a href="evaluations.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'evaluations.php' ? 'active' : ''; ?>" data-tab="evaluations"><i data-feather="briefcase"></i> Evaluations</a>
+        <a href="metricts.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'metricts.php' ? 'active' : ''; ?>" data-tab="metricts"><i data-feather="bar-chart"></i> Metricts</a>
         <a href="reports.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : ''; ?>" data-tab="reports"><i data-feather="mail"></i> Reports</a>
-        <a href="test_session.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'test_session.php' ? 'active' : ''; ?>" data-tab="test" style="background: #fef3c7; color: #92400e;"><i data-feather="help-circle"></i> Test Session</a>
+        <a href="test_session.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'test_session.php' ? 'active' : ''; ?>" data-tab="test" style="background: #fef3c7; color: #92400e;"><i data-feather="help-circle"></i> Profile</a>
       </div>
     </div>
   </nav>

@@ -90,9 +90,10 @@ usort($categoryStatsList, function($a, $b) {
     <div class="container">
       <div class="card">
       <div class="header-card">
-        <h1 class="title">Dashboard</h1>
-        <p class="description">Resumen de desempeño semanal (Lun-Vie: <?= htmlspecialchars($dateStart) ?> a <?= htmlspecialchars($dateEnd) ?>)</p>
+        <!-- <h1 class="title">Dashboard</h1> -->
         <p>Bienvenido, <?= htmlspecialchars($_SESSION['name'] ?? '') ?>!</p>
+        <!-- <p class="description">Resumen de desempeño semanal (Lun-Vie: <?= htmlspecialchars($dateStart) ?> a <?= htmlspecialchars($dateEnd) ?>)</p> -->
+
       </div>
 
       <div class="body-card">

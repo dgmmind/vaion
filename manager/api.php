@@ -88,6 +88,7 @@ switch ($action) {
                 $evaluationsToInsert[] = [
                     "day_id"      => $day_id,
                     "employee_id" => $emp["id"],
+                    "manager_id"  => $manager_id,
                     "category"    => $category,
                     "checked"     => true,
                     "item"        => "PERFECTO"
@@ -95,18 +96,48 @@ switch ($action) {
             }
         }
 
-        // Insertar en batch (50 por batch)
+        // Insertar evaluaciones en batch (50 por batch) y validar cada inserción
         $batchSize = 50;
+        $evaluationsInserted = 0;
+        $evaluationsErrors = [];
+        
         for ($i = 0; $i < count($evaluationsToInsert); $i += $batchSize) {
             $batch = array_slice($evaluationsToInsert, $i, $batchSize);
-            $supabase->insert("evaluations", $batch);
+            $insertResult = $supabase->insert("evaluations", $batch);
+            
+            if ($insertResult["status"] === 201) {
+                $evaluationsInserted += count($batch);
+            } else {
+                $evaluationsErrors[] = [
+                    "batch_index" => $i,
+                    "error" => $insertResult
+                ];
+            }
         }
-
-        echo json_encode([
-            "day"               => $dayResult["data"][0],
-            "evaluations_count" => count($evaluationsToInsert),
-            "message"           => "Día y evaluaciones creadas correctamente"
-        ]);
+        
+        // Verificar que se insertaron todas las evaluaciones
+        $totalEvaluations = count($evaluationsToInsert);
+        $success = ($evaluationsInserted === $totalEvaluations);
+        
+        // Preparar respuesta detallada
+        $response = [
+            "success" => $success,
+            "day" => $dayResult["data"][0],
+            "evaluations" => [
+                "total_expected" => $totalEvaluations,
+                "total_inserted" => $evaluationsInserted,
+                "success_rate" => round(($evaluationsInserted / $totalEvaluations) * 100, 2) . "%"
+            ],
+            "message" => $success ? "Día y evaluaciones creadas correctamente" : "Día creado pero algunas evaluaciones fallaron"
+        ];
+        
+        // Si hubo errores, incluirlos en la respuesta
+        if (!empty($evaluationsErrors)) {
+            $response["evaluation_errors"] = $evaluationsErrors;
+            http_response_code(207); // Multi-Status
+        }
+        
+        echo json_encode($response);
         break;
 
     // =========================
@@ -170,6 +201,73 @@ switch ($action) {
         } else {
             http_response_code(500);
             echo json_encode(["error" => "No se pudo actualizar", "details" => $updateResult]);
+        }
+        break;
+
+    // =========================
+    // Obtener pausas del usuario para hoy
+    // =========================
+    case 'getUserPauses':
+        $userId = $_GET['userId'] ?? null;
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(["error" => "Falta userId"]);
+            exit;
+        }
+        
+        // Obtener TODAS las pausas del usuario (sin filtrar por fecha)
+        $pausesResponse = $supabase->select('pauses', '*', [
+            'conditions' => "employee_id.eq.{$userId}",
+            'order' => 'start_time.desc'
+        ]);
+
+        if ($pausesResponse['status'] === 200) {
+            $pauses = $pausesResponse['data'] ?? [];
+            
+            echo json_encode([
+                "success" => true,
+                "pauses" => $pauses
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode([
+                "success" => false,
+                "message" => "Error al obtener pausas",
+                "details" => $pausesResponse
+            ]);
+        }
+        break;
+
+    // =========================
+    // Obtener pausas activas del usuario
+    // =========================
+    case 'getUserActivePauses':
+        $userId = $_GET['userId'] ?? null;
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(["error" => "Falta userId"]);
+            exit;
+        }
+        
+        // Obtener solo las pausas activas (end_time es null)
+        $activePausesResponse = $supabase->select('pauses', '*', [
+            'conditions' => "employee_id.eq.{$userId},end_time.is.null"
+        ]);
+
+        if ($activePausesResponse['status'] === 200) {
+            $activePauses = $activePausesResponse['data'] ?? [];
+            
+            echo json_encode([
+                "success" => true,
+                "pauses" => $activePauses
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode([
+                "success" => false,
+                "message" => "Error al obtener pausas activas",
+                "details" => $activePausesResponse
+            ]);
         }
         break;
 

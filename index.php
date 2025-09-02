@@ -7,10 +7,16 @@ require_once 'data/users.php';
 // Verificar si ya hay una sesión activa
 if (isset($_SESSION['user_id'])) {
     // Redirigir según el rol
-    if ($_SESSION['role'] === 'admin') {
-        header('Location: manager/dashboard.php');
-    } else {
-        header('Location: employee/dashboard.php');
+    switch ($_SESSION['role']) {
+        case 'superadmin':
+            header('Location: superadmin/dashboard.php');
+            break;
+        case 'admin':
+            header('Location: manager/dashboard.php');
+            break;
+        case 'user':
+        default:
+            header('Location: employee/dashboard.php');
     }
     exit();
 }
@@ -26,8 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Buscar el usuario en el array de usuarios
     foreach ($users as $managerKey => $manager) {
-        // Verificar si es el manager
-        if ($manager['username'] === $username && $manager['password'] === $password) {
+        // Verificar si es el superadmin
+        if (($manager['role'] ?? 'admin') === 'superadmin' && $manager['username'] === $username && $manager['password'] === $password) {
+            $user = $manager;
+            $userRole = 'superadmin';
+            break;
+        }
+        // Verificar si es un admin normal
+        if (($manager['role'] ?? 'admin') === 'admin' && $manager['username'] === $username && $manager['password'] === $password) {
             $user = $manager;
             $userRole = 'admin';
             break;
@@ -51,13 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['name'] = $user['name'];
         $_SESSION['role'] = $userRole;
         
-        // Solo los managers necesitan manager_id
-        if ($userRole === 'admin') {
+        // Solo los managers y superadmins necesitan manager_id
+        if (in_array($userRole, ['admin', 'superadmin'])) {
             $_SESSION['manager_id'] = $managerKey;
         }
         
         // Redirigir según el rol
-        if ($userRole === 'admin') {
+        if ($userRole === 'superadmin') {
+            header('Location: superadmin/dashboard.php');
+        } elseif ($userRole === 'admin') {
             header('Location: manager/dashboard.php');
         } else {
             header('Location: employee/dashboard.php');

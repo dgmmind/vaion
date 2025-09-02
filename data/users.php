@@ -5,6 +5,7 @@ $users = [
         "name" => "DAVID GONZALES MALDONADO",
         "username" => "dmaldonado",
         "password" => "dmaldonado1",
+        "DEPARTMENT" => "DATA ENTRY",
         "status" => "active",
         "role" => "admin",
         "employees" => [
@@ -23,6 +24,7 @@ $users = [
         "name" => "JORGE LUIS RODRIGUEZ MACEDO",
         "username" => "jmacedo",
         "password" => "jmacedo1",
+        "DEPARTMENT" => "COMPLIANCE",
         "status" => "active",
         "role" => "admin",
         "employees" => [
@@ -32,7 +34,8 @@ $users = [
             [ "id" => "22694", "name" => "ISIS AMALETH ARDON MARADIAGA", "username" => "imaradiaga", "password" => "imaradiaga1", "status" => "active", "role" => "user" ],
             [ "id" => "10616", "name" => "ROBERTO CARLOS MERAZ CANALES", "username" => "rcanales", "password" => "rcanales1", "status" => "active", "role" => "user" ],
             [ "id" => "12309", "name" => "FABIOLA YADIRA CASTILLO MONCADA", "username" => "fmoncada", "password" => "fmoncada1", "status" => "active", "role" => "user" ],
-            [ "id" => "02936", "name" => "VICTOR ENRIQUE MALDONADO ZELAYA", "username" => "vzelaya", "password" => "vzelaya1", "status" => "active", "role" => "user" ]
+            [ "id" => "02936", "name" => "VICTOR ENRIQUE MALDONADO ZELAYA", "username" => "vzelaya", "password" => "vzelaya1", "status" => "active", "role" => "user" ],
+            [ "id" => "00543", "name" => "KATERIN ELIZABETH HERNANDEZ MARTINEZ", "username" => "kmartinez", "password" => "kmartinez1", "status" => "active", "role" => "user" ]
         ]
     ],
     "MGR003" => [
@@ -40,6 +43,7 @@ $users = [
         "name" => "FRANCISCO JAVIER MENDEZ MONTENEGRO",
         "username" => "fmontenegro",
         "password" => "fmontenegro1",
+        "DEPARTMENT" => "CUSTOMER SERVICE",
         "status" => "active",
         "role" => "admin",
         "employees" => [
@@ -55,15 +59,32 @@ $users = [
         ]
     ],
     "MGR004" => [
-        "id" => "00731",
-        "name" => "JORGE ARTURO GOMEZ COELLO",
-        "username" => "jcoello",
-        "password" => "jcoello1",
-        "status" => "active",
-        "role" => "admin",
-        "employees" => [
-            [ "id" => "14537", "name" => "LUIS FRANCISCO MURILLO CARCAMO", "username" => "lcarcamo", "password" => "lcarcamo1", "status" => "active", "role" => "user" ],
-            [ "id" => "02150", "name" => "CLAUDETTE DESIREE ROLLINGS MARTINEZ", "username" => "cmartinez", "password" => "cmartinez1", "status" => "active", "role" => "user" ]
+    "id" => "00731",
+    "name" => "JORGE ARTURO GOMEZ COELLO",
+    "username" => "jcoello",
+    "password" => "jcoello1",
+    "DEPARTMENT" => "NEGOTIATION AND INSURANCE ",
+    "status" => "active",
+    "role" => "admin",
+    "employees" => [
+        [ "id" => "14537", "name" => "LUIS FRANCISCO MURILLO CARCAMO", "username" => "lcarcamo", "password" => "lcarcamo1", "status" => "active", "role" => "user" ],
+        [ "id" => "02150", "name" => "CLAUDETTE DESIREE ROLLINGS MARTINEZ", "username" => "cmartinez", "password" => "cmartinez1", "status" => "active", "role" => "user" ],
+        [ "id" => "05878", "name" => "VLADIMIR RODRIGUEZ CASTEJÓN", "username" => "vrcastejon", "password" => "vrcastejon1", "status" => "active", "role" => "user" ],
+        [ "id" => "02088", "name" => "ENRIQUE ALEJANDRO CASCO MURILLO", "username" => "ecascomurillo", "password" => "ecascomurillo1", "status" => "active", "role" => "user" ],
+        [ "id" => "09157", "name" => "GERARDO LEONEL FERNANDEZ MARTINEZ", "username" => "gfernandez", "password" => "gfernandez1", "status" => "active", "role" => "user" ],
+        [ "id" => "14588", "name" => "SETH ISAÍ GODOY CANTARERO", "username" => "sgodoy", "password" => "sgodoy1", "status" => "active", "role" => "user" ],
+        [ "id" => "17862", "name" => "RAÚL EDUARDO ESPINOZA NÚÑEZ", "username" => "respinoza", "password" => "respinoza1", "status" => "active", "role" => "user" ],
+        [ "id" => "02339", "name" => "WALTER ERNESTO VARELA SEVILLA", "username" => "wvarela", "password" => "wvarela1", "status" => "active", "role" => "user" ]
         ]
-    ]
+],
+"MGR005" => [
+            "id" => "34210",
+            "name" => "MANAGER SUPER ADMINISTRADOR",
+            "username" => "superadmin",
+            "password" => "superadmin1",
+            "status" => "active",
+            "role" => "superadmin",
+            "employees" => []
+        ],                      
 ];
+?>

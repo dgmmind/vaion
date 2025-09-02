@@ -8,12 +8,17 @@ $supabase = new Supabase();
 
 $pauseReasons = [
   "Almuerzo",
-  "Break corto",
+  "Break 10 minutos",
   "Reunión",
   "Asunto personal",
+  "Baño de afuera",
+  "Reunión oficina",
+  "Ayuda a un compañero",
+  "Solicitando ayuda",
+  "Baño de oficina",
+  "Por Agua",
   "Otro"
 ];
-
 ?>
 
   <!-- Main Content -->
@@ -56,7 +61,7 @@ $pauseReasons = [
       <!-- Body Card: Contenido principal -->
       <div class="body-card">
         <!-- Status Indicators -->
-        <div class="status-container">
+        <div class="status-container" style="display: none;">
           <!-- Recording Indicator -->
           <div class="status-indicator status-rec">
             <div class="status-icon">
@@ -106,12 +111,10 @@ $pauseReasons = [
         <div class="card-column-two">
           <!-- Columna Izquierda: Solo Historial -->
           <div class="column-one">
-            <!-- Header Card: Historial Reciente -->
-            <div class="header-card">
-              <div class="title">Historial Reciente</div>
-            </div>
+           
             <!-- Body Card: Contenido del Historial -->
             <div class="body-card">
+              <h3 class="title">Historial de Pausas</h3>
               <div id="pausesContainer" class="pauses-list">
                 <!-- Las pausas se cargarán aquí dinámicamente -->
               </div>

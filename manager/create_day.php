@@ -275,7 +275,6 @@ require_once 'template/header.php';
                   title: "Día no válido",
                   text: "No se pueden crear días los fines de semana (sábado o domingo). Por favor selecciona un día entre lunes y viernes.",
                   icon: "warning",
-                  position: "top-end",
                   showConfirmButton: false,
                   timer: 4000
               });
@@ -299,25 +298,52 @@ require_once 'template/header.php';
               
               const result = await response.json();
               
-              if (result.day) {
+              if (result.success && result.day) {
                   const day = result.day;
                   // Add the new day to the list without reloading
                   addNewDay(day);
                   
+                  // Mostrar información detallada del éxito
+                  const evaluationsInfo = result.evaluations;
                   Swal.fire({
                       title: "¡Éxito!",
-                      text: "Día creado exitosamente!",
+                      html: `
+                          <div class="text-left">
+                              <p><strong>Día creado:</strong> ${day.day_date}</p>
+                              <p><strong>Evaluaciones esperadas:</strong> ${evaluationsInfo.total_expected}</p>
+                              <p><strong>Evaluaciones insertadas:</strong> ${evaluationsInfo.total_inserted}</p>
+                              <p><strong>Tasa de éxito:</strong> <span class="text-success">${evaluationsInfo.success_rate}</span></p>
+                          </div>
+                      `,
                       icon: "success",
-                      position: "top-end",
-                      showConfirmButton: false,
-                      timer: 1500
+                      confirmButtonText: "Entendido",
+                      timer: 10000
+                  });
+              } else if (response.status === 207) {
+                  // Multi-Status: Día creado pero algunas evaluaciones fallaron
+                  const day = result.day;
+                  addNewDay(day);
+                  
+                  const evaluationsInfo = result.evaluations;
+                  Swal.fire({
+                      title: "⚠️ Día creado con advertencias",
+                      html: `
+                          <div class="text-left">
+                              <p><strong>Día creado:</strong> ${day.day_date}</p>
+                              <p><strong>Evaluaciones esperadas:</strong> ${evaluationsInfo.total_expected}</p>
+                              <p><strong>Evaluaciones insertadas:</strong> <span class="text-warning">${evaluationsInfo.total_inserted}</span></p>
+                              <p><strong>Tasa de éxito:</strong> <span class="text-warning">${evaluationsInfo.success_rate}</span></p>
+                              <p class="text-danger"><small>Algunas evaluaciones no se pudieron crear. Revisa los logs del servidor.</small></p>
+                          </div>
+                      `,
+                      icon: "warning",
+                      confirmButtonText: "Entendido"
                   });
               } else if (response.status === 400 && result.error) {
                   Swal.fire({
                       title: "Error",
                       text: result.error,
                       icon: "warning",
-                      position: "top-end",
                       showConfirmButton: false,
                       timer: 3000
                   });
@@ -326,7 +352,6 @@ require_once 'template/header.php';
                       title: "Error!",
                       text: result.error || "Error al crear el día",
                       icon: "error",
-                      position: "top-end",
                       showConfirmButton: false,
                       timer: 1500
                   });

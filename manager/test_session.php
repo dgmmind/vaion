@@ -4,9 +4,9 @@ require_once 'template/header.php';
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="container card">
-      <h1 class="title">Test de Sesión</h1>
-      <p class="description">Verificando que la sesión funcione correctamente</p>
+    <div class="container">
+      <div class="card">
+      <p class="description">Datos Manager</p>
       
       <div style="margin: 20px 0; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
         <h3>Información de Sesión:</h3>
@@ -40,6 +40,7 @@ require_once 'template/header.php';
           <a href="evaluations.php" style="padding: 10px 20px; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px;">Evaluations</a>
           <a href="reports.php" style="padding: 10px 20px; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px;">Reports</a>
         </div>
+      </div>
       </div>
     </div>
   </main>

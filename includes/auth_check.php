@@ -52,18 +52,7 @@ function requireRole($role) {
  * @return string La URL base
  */
 function getBaseUrl() {
-    $currentPath = $_SERVER['PHP_SELF'];
-    $pathInfo = pathinfo($currentPath);
-    
-    // Determinar la profundidad de la carpeta actual
-    $depth = substr_count($pathInfo['dirname'], '/');
-    
-    // Construir la ruta relativa a la raíz
-    $path = '';
-    for ($i = 1; $i < $depth; $i++) {
-        $path .= '../';
-    }
-    
-    return $path;
+    return 'https://vaion.neositio.com/';
 }
+
 ?>

@@ -54,11 +54,20 @@ if ($dayId && !array_filter($days, fn($d) => $d['day_id'] == $dayId)) {
 // Mapa de empleados del manager
 $employeesMap = array_column($manager["employees"] ?? [], "name", "id");
 
-// Traer evaluaciones
+// Traer evaluaciones filtradas por manager_id y day_id para máxima seguridad
 $evaluations = [];
 if ($dayId) {
-    foreach ($supabase->select("evaluations", "evaluation_id, employee_id, category, checked, item, day_id")["data"] ?? [] as $e) {
-        if (isset($employeesMap[$e["employee_id"]]) && $e["day_id"] == $dayId) {
+    // Filtrar por manager_id y day_id para garantizar que solo traemos evaluaciones del manager actual
+    $filteredData = $supabase->select("evaluations", "evaluation_id, employee_id, category, checked, item, day_id", [
+        "manager_id" => $managerId,
+        "day_id" => $dayId
+    ])["data"] ?? [];
+    
+
+    
+    // Organizar evaluaciones por empleado y categoría
+    foreach ($filteredData as $e) {
+        if (isset($employeesMap[$e["employee_id"]])) {
             $evaluations[$e['employee_id']][$e['category']] = [
                 'evaluation_id' => $e['evaluation_id'],
                 'item' => $e['item'],
@@ -103,7 +112,7 @@ $categories = array_keys($categoryItems);
           <table>
               <thead>
                   <tr>
-                      <th>Empleado</th>
+                      <th>EMPLEADO</th>
                       <?php foreach ($categories as $category): ?>
                           <th colspan="2"><?= htmlspecialchars($category) ?></th>
                       <?php endforeach; ?>
@@ -112,7 +121,7 @@ $categories = array_keys($categoryItems);
               <tbody>
                   <?php foreach ($employeesMap as $employeeId => $employeeName): ?>
                       <tr data-employee-id="<?= htmlspecialchars($employeeId) ?>">
-                          <td><?= htmlspecialchars($employeeName) ?></td>
+                          <td class="text-left font-weight-bold"><?= htmlspecialchars($employeeName) ?></td>
                           <?php foreach ($categories as $category): 
                               $eval = $evaluations[$employeeId][$category] ?? [];
                               $item = $eval['item'] ?? "PERFECTO";

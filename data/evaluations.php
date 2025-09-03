@@ -6,6 +6,7 @@ $category_item = [
         "Sale antes",
         "Pausas largas",
         "No registra entrada",
+        "No registra pausas",
         "Sin pausas"
     ],
     "PRESENTACION" => [

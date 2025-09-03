@@ -1,4 +1,7 @@
 <?php
+// Configurar zona horaria para Honduras
+date_default_timezone_set('America/Tegucigalpa');
+
 require_once "../repository/supabase.php";
 require_once "../data/users.php";
 require_once "../data/evaluations.php";
@@ -215,9 +218,10 @@ switch ($action) {
             exit;
         }
         
-        // Obtener TODAS las pausas del usuario (sin filtrar por fecha)
+        // Obtener solo las pausas del día actual
+        $today = date('Y-m-d');
         $pausesResponse = $supabase->select('pauses', '*', [
-            'conditions' => "employee_id.eq.{$userId}",
+            'conditions' => "employee_id.eq.{$userId},start_time.gte.{$today}T00:00:00,start_time.lt.{$today}T23:59:59",
             'order' => 'start_time.desc'
         ]);
 
@@ -236,7 +240,7 @@ switch ($action) {
                 "details" => $pausesResponse
             ]);
         }
-        break;
+        exit;
 
     // =========================
     // Obtener pausas activas del usuario
@@ -270,6 +274,7 @@ switch ($action) {
             ]);
         }
         break;
+
 
     default:
         http_response_code(400);

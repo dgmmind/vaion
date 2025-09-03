@@ -13,24 +13,32 @@ if (!isset($_SESSION['user_id'])) {
 
 $supabase = new Supabase();
 
-// Obtener el manager_id de la sesión
-$managerId = $_SESSION['manager_id'];
-
 // Incluir el archivo de usuarios
 require_once "../data/users.php";
 
-// Obtener solo los empleados del manager en sesión
-$currentManagerUsers = [];
-if (isset($users[$managerId]) && isset($users[$managerId]['employees'])) {
-    $currentManagerUsers = $users[$managerId]['employees'];
+// Obtener los empleados del manager logueado
+$allEmployees = [];
+$currentManagerId = $_SESSION['user_id'];
+
+// Buscar el manager actual en el array de usuarios
+foreach ($users as $userId => $user) {
+    if ($user['id'] === $currentManagerId && $user['role'] === 'admin' && isset($user['employees'])) {
+        foreach ($user['employees'] as $employee) {
+            $employee['manager_name'] = $user['name'];
+            $employee['manager_id'] = $user['id'];
+            $employee['department'] = $user['DEPARTMENT'] ?? 'N/A';
+            $allEmployees[] = $employee;
+        }
+        break; // Salir del bucle una vez que encontramos al manager actual
+    }
 }
 
 // Fecha del día que estamos monitoreando (automática)
 $monitoringDate = date('Y-m-d'); // Detecta automáticamente el día actual
 
-// Obtener solo las pausas del día actual de todos los usuarios del manager
+// Obtener todas las pausas del día actual de todos los empleados
 $allPausesResponse = $supabase->select('pauses', '*', [
-    'conditions' => 'employee_id.in.(' . implode(',', array_map(function($user) { return $user['id']; }, $currentManagerUsers)) . '),start_time.gte.' . $monitoringDate . 'T00:00:00,start_time.lt.' . $monitoringDate . 'T23:59:59'
+    'conditions' => 'employee_id.in.(' . implode(',', array_map(function($user) { return $user['id']; }, $allEmployees)) . '),start_time.gte.' . $monitoringDate . 'T00:00:00,start_time.lt.' . $monitoringDate . 'T23:59:59'
 ]);
 
 $allPauses = [];
@@ -48,8 +56,6 @@ if ($pausesResponse['status'] === 200 && isset($pausesResponse['data'])) {
     $activePauses = $pausesResponse['data'];
 }
 
-
-
 // Crear un mapa de usuarios con pausas activas
 $usersWithActivePause = [];
 foreach ($activePauses as $pause) {
@@ -60,7 +66,7 @@ foreach ($activePauses as $pause) {
 $usersOnPause = [];
 $usersWorking = [];
 
-foreach ($currentManagerUsers as $user) {
+foreach ($allEmployees as $user) {
     if (isset($usersWithActivePause[$user['id']])) {
         $usersOnPause[] = $user;
     } else {
@@ -75,8 +81,8 @@ foreach ($currentManagerUsers as $user) {
     <div class="card">
       <!-- Header Card -->
       <div class="header-card">
-        <div class="title">Monitoreo en Tiempo Real</div>
-        <div class="description">Estado actual de los empleados</div>
+        <div class="title">Monitoreo en Tiempo Real - <?php echo htmlspecialchars($users[$currentManagerId]['name'] ?? 'Manager'); ?></div>
+        <div class="description">Estado actual de tus empleados</div>
       </div>
       
       <!-- Body Card -->
@@ -84,82 +90,165 @@ foreach ($currentManagerUsers as $user) {
         <div class="table-container">
           <h3>Estado de Empleados</h3>
           
-          <div class="card-column-two">
-            <!-- Columna 1: Usuarios con Pausas -->
-            <div class="column-one">
-              <h3>Empleados en Pausa (<?php echo count($usersOnPause); ?>)</h3>
+          <!-- Sección 1: Empleados en Pausa Activa -->
+          <div class="full-width-section">
+            <h3>Pausas Activas (<?php echo count($usersOnPause); ?>)</h3>
               <?php if (empty($usersOnPause)): ?>
                 <div class="description">Todos los empleados están trabajando</div>
               <?php else: ?>
                 <div class="data-table">
                   <table>
-                                      <thead>
-                    <tr>
-                      <th>EMPLEADO</th>
-                      <th>RAZÓN</th>
-                      <th>INICIO</th>
-                      <th>TOTAL PAUSAS</th>
-                      <th>TOTAL TIEMPO</th>
-                      <th>ACCIONES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php foreach ($usersOnPause as $user): ?>
-                      <?php $pause = $usersWithActivePause[$user['id']]; ?>
+                    <thead>
                       <tr>
-                        <td class="text-left font-weight-bold">
-                          <div class="user-avatar">
-                            <i data-feather="user"></i>
-                          </div>
-                          <?php echo htmlspecialchars($user['name']); ?>
-                        </td>
-                        <td class="active-reason"><?php echo htmlspecialchars($pause['reason'] ?? 'Sin razón especificada'); ?></td>
-                        <td><?php echo date('d/m/Y H:i', strtotime($pause['start_time'])); ?></td>
-                        <td class="total-column"><?php 
-                          // Contar TODAS las pausas de este usuario específico
-                          $userTotalPauses = 0;
-                          foreach ($allPauses as $p) {
-                            if ($p['employee_id'] == $user['id']) {
-                              $userTotalPauses++;
-                            }
-                          }
-                          echo $userTotalPauses;
-                        ?></td>
-                        <td class="total-column"><?php 
-                          // Si está en pausa activa, mostrar "En progreso"
-                          if (!isset($pause['end_time']) || $pause['end_time'] === null) {
-                            echo '<span class="in-progress">En progreso</span>';
-                          } else {
-                            // Calcular tiempo total en pausa de este usuario específico (solo pausas completadas)
-                            $userTotalTime = 0;
+                        <th>EMPLEADO</th>
+                        <th>DEPARTMENT</th>
+                        <th>RAZÓN</th>
+                        <th>INICIO</th>
+                        <th>TOTAL PAUSAS</th>
+                        <th>TOTAL TIEMPO</th>
+                        <th>ACCIONES</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($usersOnPause as $user): ?>
+                        <?php $pause = $usersWithActivePause[$user['id']]; ?>
+                        <tr>
+                          <td class="text-left font-weight-bold">
+                            <div class="user-avatar">
+                              <i data-feather="user"></i>
+                            </div>
+                            <?php echo htmlspecialchars($user['name']); ?>
+                          </td>
+                          <td><?php echo htmlspecialchars($user['department']); ?></td>
+                          <td class="active-reason"><?php echo htmlspecialchars($pause['reason'] ?? 'Sin razón especificada'); ?></td>
+                          <td><?php echo date('d/m/Y H:i', strtotime($pause['start_time'])); ?></td>
+                          <td class="total-column"><?php 
+                            // Contar TODAS las pausas de este usuario específico
+                            $userTotalPauses = 0;
                             foreach ($allPauses as $p) {
-                              if ($p['employee_id'] == $user['id'] && $p['end_time']) {
-                                $start = strtotime($p['start_time']);
-                                $end = strtotime($p['end_time']);
-                                $userTotalTime += round(($end - $start) / 60);
+                              if ($p['employee_id'] == $user['id']) {
+                                $userTotalPauses++;
                               }
                             }
-                            echo $userTotalTime . ' min';
-                          }
-                        ?></td>
-                        <td>
-                          <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
-                            <i data-feather="eye"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    <?php endforeach; ?>
-                  </tbody>
+                            echo $userTotalPauses;
+                          ?></td>
+                          <td class="total-column"><?php 
+                            // Si está en pausa activa, mostrar contador en tiempo real
+                            if (!isset($pause['end_time']) || $pause['end_time'] === null) {
+                              $startTime = strtotime($pause['start_time']);
+                              echo '<span class="in-progress" data-start-time="' . $startTime . '">Calculando...</span>';
+                            } else {
+                              // Calcular tiempo total en pausa de este usuario específico (solo pausas completadas)
+                              $userTotalTime = 0;
+                              foreach ($allPauses as $p) {
+                                if ($p['employee_id'] == $user['id'] && $p['end_time']) {
+                                  $start = strtotime($p['start_time']);
+                                  $end = strtotime($p['end_time']);
+                                  $userTotalTime += round(($end - $start) / 60);
+                                }
+                              }
+                              echo $userTotalTime . ' min';
+                            }
+                          ?></td>
+                          <td>
+                            <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
+                              <i data-feather="eye"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
+                    </tbody>
                   </table>
                 </div>
               <?php endif; ?>
-              
-              <!-- Tabla de Usuarios sin Pausas dentro de la columna ONE -->
+            </div>
+            
+            <!-- Sección 2: Empleados Trabajando -->
+            <div class="full-width-section" style="margin-top: 30px;">
+              <h3>Empleados Trabajando (<?php echo count($usersWorking); ?>)</h3>
+                <?php if (empty($usersWorking)): ?>
+                  <div class="description">Todos los empleados están en pausa</div>
+                <?php else: ?>
+                  <div class="data-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>EMPLEADO</th>
+                          <th>ESTADO</th>
+                          <th>TOTAL PAUSAS</th>
+                          <th>TOTAL TIEMPO</th>
+                          <th>ACCIONES</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach ($usersWorking as $user): ?>
+                          <tr>
+                            <td class="text-left font-weight-bold">
+                              <div class="user-avatar">
+                                <i data-feather="user"></i>
+                              </div>
+                              <?php echo htmlspecialchars($user['name']); ?>
+                            </td>
+                            <td>
+                              <span class="status-working">Working</span>
+                            </td>
+                            <td class="total-column"><?php 
+                              // Contar TODAS las pausas de este usuario (activas y completadas)
+                              $userPauses = 0;
+                              foreach ($allPauses as $p) {
+                                if ($p['employee_id'] == $user['id']) {
+                                  $userPauses++;
+                                }
+                              }
+                              echo $userPauses;
+                            ?></td>
+                            <td class="total-column"><?php 
+                              // Calcular tiempo total en pausa de este usuario específico (solo pausas completadas)
+                              $totalSeconds = 0;
+                              foreach ($allPauses as $p) {
+                                if ($p['employee_id'] == $user['id'] && $p['end_time']) {
+                                  $start = new DateTime($p['start_time']);
+                                  $end = new DateTime($p['end_time']);
+                                  $interval = $start->diff($end);
+                                  $totalSeconds += $interval->h * 3600 + $interval->i * 60 + $interval->s;
+                                }
+                              }
+                              
+                              // Formatear el tiempo total
+                              $hours = floor($totalSeconds / 3600);
+                              $minutes = floor(($totalSeconds % 3600) / 60);
+                              $seconds = $totalSeconds % 60;
+                              
+                              $timeString = '';
+                              if ($hours > 0) $timeString .= $hours . 'h ';
+                              if ($minutes > 0 || $hours > 0) $timeString .= $minutes . 'm ';
+                              $timeString .= $seconds . 's';
+                              
+                              echo $timeString;
+                            ?></td>
+                            <td>
+                              <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
+                                <i data-feather="eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                      </tbody>
+                    </table>
+                  </div>
+                <?php endif; ?>
+                <?php if (empty($usersWorking)): ?>
+                  <div class="description">No hay empleados trabajando actualmente</div>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Sección 3: Usuarios sin Pausas -->
+            <div class="full-width-section" style="margin-top: 30px;">
               <?php
                 // Usuarios que no han tenido pausas en la fecha monitoreada
                 $usersWithoutPauses = [];
                 
-                foreach ($currentManagerUsers as $user) {
+                foreach ($allEmployees as $user) {
                     $hasPausesToday = false;
                     foreach ($allPauses as $pause) {
                         if ($pause['employee_id'] == $user['id']) {
@@ -173,110 +262,47 @@ foreach ($currentManagerUsers as $user) {
                 }
               ?>
               
+              <h3>⚠️ Usuarios sin Pausas el <?php echo date('d/m/Y', strtotime($monitoringDate)); ?> (<?php echo count($usersWithoutPauses); ?>)</h3>
               <?php if (!empty($usersWithoutPauses)): ?>
-                <div class="table-container" style="margin-top: 20px;">
-                  <h3 class="no-pauses-title">⚠️ Usuarios sin Pausas el <?php echo date('d/m/Y', strtotime($monitoringDate)); ?> (<?php echo count($usersWithoutPauses); ?>)</h3>
-                  <p class="no-pauses-description">Estos usuarios no han registrado pausas en la fecha monitoreada, lo cual es anormal</p>
-                  
-                  <div class="data-table">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>EMPLEADO</th>
-                          <th>ESTADO</th>
-                          <th>ACCIONES</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <?php foreach ($usersWithoutPauses as $user): ?>
-                          <tr class="no-pauses-row">
-                            <td class="text-left font-weight-bold">
-                              <div class="user-avatar">
-                                <i data-feather="user"></i>
-                              </div>
-                              <?php echo htmlspecialchars($user['name']); ?>
-                            </td>
-                            <td>
-                              <span class="status-warning">Sin Pausas</span>
-                            </td>
-                            <td>
-                              <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
-                                <i data-feather="eye"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        <?php endforeach; ?>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              <?php endif; ?>
-            </div>
-
-            <!-- Columna 2: Usuarios Trabajando -->
-            <div class="column-two">
-              <h3>Empleados Trabajando (<?php echo count($usersWorking); ?>)</h3>
-              <?php if (empty($usersWorking)): ?>
-                <div class="description">Todos los empleados están en pausa</div>
-              <?php else: ?>
+                <p class="no-pauses-description">Estos usuarios no han registrado pausas en la fecha monitoreada, lo cual es anormal</p>
+                
                 <div class="data-table">
                   <table>
-                                      <thead>
-                    <tr>
-                      <th>EMPLEADO</th>
-                      <th>ESTADO</th>
-                      <th>TOTAL PAUSAS</th>
-                      <th>TOTAL TIEMPO</th>
-                      <th>ACCIONES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php foreach ($usersWorking as $user): ?>
+                    <thead>
                       <tr>
-                        <td class="text-left font-weight-bold">
-                          <div class="user-avatar">
-                            <i data-feather="user"></i>
-                          </div>
-                          <?php echo htmlspecialchars($user['name']); ?>
-                        </td>
-                        <td>
-                          <span class="status-working">Working</span>
-                        </td>
-                        <td class="total-column"><?php 
-                          // Contar TODAS las pausas de este usuario (activas y completadas)
-                          $userPauses = 0;
-                          foreach ($allPauses as $p) {
-                            if ($p['employee_id'] == $user['id']) {
-                              $userPauses++;
-                            }
-                          }
-                          echo $userPauses;
-                        ?></td>
-                        <td class="total-column"><?php 
-                          // Calcular tiempo total en pausa de este usuario (solo pausas completadas)
-                          $userTotalTime = 0;
-                          foreach ($allPauses as $p) {
-                            if ($p['employee_id'] == $user['id'] && $p['end_time']) {
-                              $start = strtotime($p['start_time']);
-                              $end = strtotime($p['end_time']);
-                              $userTotalTime += round(($end - $start) / 60);
-                            }
-                          }
-                          echo $userTotalTime . ' min';
-                        ?></td>
-                        <td>
-                          <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
-                            <i data-feather="eye"></i>
-                          </button>
-                        </td>
+                        <th>EMPLEADO</th>
+                        <th>DEPARTMENT</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
                       </tr>
-                    <?php endforeach; ?>
-                  </tbody>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($usersWithoutPauses as $user): ?>
+                        <tr class="no-pauses-row">
+                          <td class="text-left font-weight-bold">
+                            <div class="user-avatar">
+                              <i data-feather="user"></i>
+                            </div>
+                            <?php echo htmlspecialchars($user['name']); ?>
+                          </td>
+                          <td><?php echo htmlspecialchars($user['department']); ?></td>
+                          <td>
+                            <span class="status-warning">Sin Pausas</span>
+                          </td>
+                          <td>
+                            <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
+                              <i data-feather="eye"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
+                    </tbody>
                   </table>
                 </div>
+              <?php else: ?>
+                <p class="description">Todos los empleados han registrado pausas hoy</p>
               <?php endif; ?>
-                        </div>
-          </div>
+            </div>
         </div>
       </div>
     </div>
@@ -371,33 +397,6 @@ foreach ($currentManagerUsers as $user) {
 
 #userModal .modal-content strong {
   color: #374151;
-}
-
-/* Estilos para el modal de usuario */
-.pauses-list {
-  margin-top: 15px;
-}
-
-.pauses-list h4 {
-  margin-bottom: 15px;
-  color: #1f2937;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.pauses-list .data-table {
-  margin-top: 10px;
-}
-
-.pauses-list .data-table th,
-.pauses-list .data-table td {
-  padding: 8px 12px;
-  font-size: 12px;
-}
-
-.pauses-list .data-table th {
-  background-color: #f3f4f6;
-  font-weight: 600;
 }
 
 /* Estilos para el resumen de totales */
@@ -537,8 +536,6 @@ foreach ($currentManagerUsers as $user) {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
-
 </style>
 
 <script>
@@ -549,23 +546,51 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Auto-refresh cada 30 segundos
+// Actualizar contadores de tiempo en tiempo real
+function updateTimers() {
+  const now = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+  
+  document.querySelectorAll('.in-progress[data-start-time]').forEach(element => {
+    const startTime = parseInt(element.getAttribute('data-start-time'));
+    const elapsedSeconds = now - startTime;
+    
+    // Convertir a horas, minutos y segundos
+    const hours = Math.floor(elapsedSeconds / 3600);
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+    const seconds = elapsedSeconds % 60;
+    
+    // Formatear el tiempo
+    let timeString = '';
+    if (hours > 0) timeString += `${hours}h `;
+    if (minutes > 0 || hours > 0) timeString += `${minutes}m `;
+    timeString += `${seconds}s`;
+    
+    element.textContent = timeString;
+  });
+}
+
+// Actualizar contadores cada segundo
+setInterval(updateTimers, 1000);
+
+// Actualizar inmediatamente al cargar
+updateTimers();
+
+// Auto-refresh cada 1 minuto
 setInterval(function() {
   // Solo actualizar si la página está visible
   if (!document.hidden) {
     location.reload();
   }
-}, 30000);
+}, 60000); // 1 minuto
 
 // Función para mostrar el modal del usuario
 function showUserModal(userId, userName, userUsername) {
-  // Obtener TODAS las pausas del usuario (activas y completadas)
+  // Usar la API del superadmin
   fetch(`api.php?action=getUserPauses&userId=${userId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
         const allPauses = data.pauses || [];
-        // Filtrar las pausas activas de todas las pausas
         const activePauses = allPauses.filter(pause => !pause.end_time);
         displayUserModal(userName, userUsername, allPauses, activePauses);
       } else {
@@ -588,13 +613,29 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
     <p><strong><i data-feather="at-sign"></i> Username:</strong> ${userUsername}</p>
   `;
   
+  // Función para formatear segundos a Xh Ym Zs
+  function formatDuration(seconds) {
+    if (seconds === 0) return '0s';
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    let result = '';
+    if (hours > 0) result += `${hours}h `;
+    if (minutes > 0 || hours > 0) result += `${minutes}m `;
+    result += `${secs}s`;
+    
+    return result.trim();
+  }
+  
   // Calcular totales
   const totalPauses = pauses ? pauses.length : 0;
-  const totalTimeInPause = pauses ? pauses.reduce((total, pause) => {
+  const totalTimeInPauseSeconds = pauses ? pauses.reduce((total, pause) => {
     if (pause.end_time) {
       const start = new Date(pause.start_time);
       const end = new Date(pause.end_time);
-      return total + Math.round((end - start) / 1000 / 60);
+      return total + Math.floor((end - start) / 1000); // segundos totales
     }
     return total;
   }, 0) : 0;
@@ -607,7 +648,7 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
         <strong>Total de Pausas:</strong> ${totalPauses}
       </div>
       <div class="total-item">
-        <strong>Tiempo Total en Pausa:</strong> ${totalTimeInPause} min
+        <strong>Tiempo Total en Pausa:</strong> ${formatDuration(totalTimeInPauseSeconds)}
       </div>
       <div class="total-item">
         <strong>Pausas Activas:</strong> ${totalActivePauses}
@@ -639,7 +680,8 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
     pauses.forEach(pause => {
       const startTime = new Date(pause.start_time);
       const endTime = pause.end_time ? new Date(pause.end_time) : null;
-      const duration = endTime ? Math.round((endTime - startTime) / 1000 / 60) : 'En curso';
+      const durationInSeconds = endTime ? Math.floor((endTime - startTime) / 1000) : null;
+      const duration = endTime ? formatDuration(durationInSeconds) : 'En curso';
       const isActive = !endTime;
       const pauseDate = startTime.toLocaleDateString('es-ES');
       
@@ -649,7 +691,7 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
           <td>${startTime.toLocaleTimeString()}</td>
           <td>${endTime ? endTime.toLocaleTimeString() : '<span class="active-status">En curso</span>'}</td>
           <td class="${isActive ? 'active-reason' : ''}">${pause.reason || 'Sin razón'}</td>
-          <td>${duration === 'En curso' ? duration : duration + ' min'}</td>
+          <td>${duration}</td>
           <td>
             <span class="status-badge ${isActive ? 'status-active' : 'status-completed'}">
               ${isActive ? 'Activa' : 'Completada'}

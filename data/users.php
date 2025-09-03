@@ -84,7 +84,11 @@ $users = [
             "password" => "superadmin1",
             "status" => "active",
             "role" => "superadmin",
-            "employees" => []
+            "employees" => [
+                [ "id" => "1", "name" => "TEST 1", "username" => "test1", "password" => "test1", "status" => "active", "role" => "user" ],
+                [ "id" => "2", "name" => "TEST 2", "username" => "test2", "password" => "test2", "status" => "active", "role" => "user" ],
+                [ "id" => "3", "name" => "TEST 3", "username" => "test3", "password" => "test3", "status" => "active", "role" => "user" ],
+            ]
         ],                      
 ];
 ?>

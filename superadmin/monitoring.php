@@ -130,9 +130,10 @@ foreach ($allEmployees as $user) {
                             echo $userTotalPauses;
                           ?></td>
                           <td class="total-column"><?php 
-                            // Si está en pausa activa, mostrar "En progreso"
+                            // Si está en pausa activa, mostrar contador en tiempo real
                             if (!isset($pause['end_time']) || $pause['end_time'] === null) {
-                              echo '<span class="in-progress">En progreso</span>';
+                              $startTime = strtotime($pause['start_time']);
+                              echo '<span class="in-progress" data-start-time="' . $startTime . '">Calculando...</span>';
                             } else {
                               // Calcular tiempo total en pausa de este usuario específico (solo pausas completadas)
                               $userTotalTime = 0;
@@ -259,16 +260,28 @@ foreach ($allEmployees as $user) {
                             echo $userPauses;
                           ?></td>
                           <td class="total-column"><?php 
-                            // Calcular tiempo total en pausa de este usuario (solo pausas completadas)
-                            $userTotalTime = 0;
+                            // Calcular tiempo total en pausa de este usuario específico (solo pausas completadas)
+                            $totalSeconds = 0;
                             foreach ($allPauses as $p) {
                               if ($p['employee_id'] == $user['id'] && $p['end_time']) {
-                                $start = strtotime($p['start_time']);
-                                $end = strtotime($p['end_time']);
-                                $userTotalTime += round(($end - $start) / 60);
+                                $start = new DateTime($p['start_time']);
+                                $end = new DateTime($p['end_time']);
+                                $interval = $start->diff($end);
+                                $totalSeconds += $interval->h * 3600 + $interval->i * 60 + $interval->s;
                               }
                             }
-                            echo $userTotalTime . ' min';
+                            
+                            // Formatear el tiempo total
+                            $hours = floor($totalSeconds / 3600);
+                            $minutes = floor(($totalSeconds % 3600) / 60);
+                            $seconds = $totalSeconds % 60;
+                            
+                            $timeString = '';
+                            if ($hours > 0) $timeString .= $hours . 'h ';
+                            if ($minutes > 0 || $hours > 0) $timeString .= $minutes . 'm ';
+                            $timeString .= $seconds . 's';
+                            
+                            echo $timeString;
                           ?></td>
                           <td>
                             <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
@@ -526,18 +539,47 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Auto-refresh cada 30 segundos
+// Actualizar contadores de tiempo en tiempo real
+function updateTimers() {
+  const now = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+  
+  document.querySelectorAll('.in-progress[data-start-time]').forEach(element => {
+    const startTime = parseInt(element.getAttribute('data-start-time'));
+    const elapsedSeconds = now - startTime;
+    
+    // Convertir a horas, minutos y segundos
+    const hours = Math.floor(elapsedSeconds / 3600);
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+    const seconds = elapsedSeconds % 60;
+    
+    // Formatear el tiempo
+    let timeString = '';
+    if (hours > 0) timeString += `${hours}h `;
+    if (minutes > 0 || hours > 0) timeString += `${minutes}m `;
+    timeString += `${seconds}s`;
+    
+    element.textContent = timeString;
+  });
+}
+
+// Actualizar contadores cada segundo
+setInterval(updateTimers, 1000);
+
+// Actualizar inmediatamente al cargar
+updateTimers();
+
+// Auto-refresh cada 1 minuto
 setInterval(function() {
   // Solo actualizar si la página está visible
   if (!document.hidden) {
     location.reload();
   }
-}, 30000);
+}, 60000); // 1 minuto
 
 // Función para mostrar el modal del usuario
 function showUserModal(userId, userName, userUsername) {
-  // Obtener TODAS las pausas del usuario (activas y completadas)
-  fetch(`../manager/api.php?action=getUserPauses&userId=${userId}`)
+  // Usar la API del superadmin
+  fetch(`api.php?action=getUserPauses&userId=${userId}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
@@ -564,13 +606,29 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
     <p><strong><i data-feather="at-sign"></i> Username:</strong> ${userUsername}</p>
   `;
   
+  // Función para formatear segundos a Xh Ym Zs
+  function formatDuration(seconds) {
+    if (seconds === 0) return '0s';
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    let result = '';
+    if (hours > 0) result += `${hours}h `;
+    if (minutes > 0 || hours > 0) result += `${minutes}m `;
+    result += `${secs}s`;
+    
+    return result.trim();
+  }
+  
   // Calcular totales
   const totalPauses = pauses ? pauses.length : 0;
-  const totalTimeInPause = pauses ? pauses.reduce((total, pause) => {
+  const totalTimeInPauseSeconds = pauses ? pauses.reduce((total, pause) => {
     if (pause.end_time) {
       const start = new Date(pause.start_time);
       const end = new Date(pause.end_time);
-      return total + Math.round((end - start) / 1000 / 60);
+      return total + Math.floor((end - start) / 1000); // segundos totales
     }
     return total;
   }, 0) : 0;
@@ -583,7 +641,7 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
         <strong>Total de Pausas:</strong> ${totalPauses}
       </div>
       <div class="total-item">
-        <strong>Tiempo Total en Pausa:</strong> ${totalTimeInPause} min
+        <strong>Tiempo Total en Pausa:</strong> ${formatDuration(totalTimeInPauseSeconds)}
       </div>
       <div class="total-item">
         <strong>Pausas Activas:</strong> ${totalActivePauses}
@@ -615,7 +673,8 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
     pauses.forEach(pause => {
       const startTime = new Date(pause.start_time);
       const endTime = pause.end_time ? new Date(pause.end_time) : null;
-      const duration = endTime ? Math.round((endTime - startTime) / 1000 / 60) : 'En curso';
+      const durationInSeconds = endTime ? Math.floor((endTime - startTime) / 1000) : null;
+      const duration = endTime ? formatDuration(durationInSeconds) : 'En curso';
       const isActive = !endTime;
       const pauseDate = startTime.toLocaleDateString('es-ES');
       
@@ -625,7 +684,7 @@ function displayUserModal(userName, userUsername, pauses, activePauses) {
           <td>${startTime.toLocaleTimeString()}</td>
           <td>${endTime ? endTime.toLocaleTimeString() : '<span class="active-status">En curso</span>'}</td>
           <td class="${isActive ? 'active-reason' : ''}">${pause.reason || 'Sin razón'}</td>
-          <td>${duration === 'En curso' ? duration : duration + ' min'}</td>
+          <td>${duration}</td>
           <td>
             <span class="status-badge ${isActive ? 'status-active' : 'status-completed'}">
               ${isActive ? 'Activa' : 'Completada'}

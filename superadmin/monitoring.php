@@ -86,10 +86,9 @@ foreach ($allEmployees as $user) {
         <div class="table-container">
           <h3>Estado de Empleados</h3>
           
-          <div class="card-column-two">
-            <!-- Columna 1: Usuarios con Pausas -->
-            <div class="column-one">
-              <h3>Empleados en Pausa (<?php echo count($usersOnPause); ?>)</h3>
+          <!-- Sección 1: Empleados en Pausa Activa -->
+          <div class="full-width-section">
+            <h3>Empleados en Pausa (<?php echo count($usersOnPause); ?>)</h3>
               <?php if (empty($usersOnPause)): ?>
                 <div class="description">Todos los empleados están trabajando</div>
               <?php else: ?>
@@ -158,70 +157,10 @@ foreach ($allEmployees as $user) {
                   </table>
                 </div>
               <?php endif; ?>
-              
-              <!-- Tabla de Usuarios sin Pausas dentro de la columna ONE -->
-              <?php
-                // Usuarios que no han tenido pausas en la fecha monitoreada
-                $usersWithoutPauses = [];
-                
-                foreach ($allEmployees as $user) {
-                    $hasPausesToday = false;
-                    foreach ($allPauses as $pause) {
-                        if ($pause['employee_id'] == $user['id']) {
-                            $hasPausesToday = true;
-                            break;
-                        }
-                    }
-                    if (!$hasPausesToday) {
-                        $usersWithoutPauses[] = $user;
-                    }
-                }
-              ?>
-              
-              <?php if (!empty($usersWithoutPauses)): ?>
-                <div class="table-container" style="margin-top: 20px;">
-                  <h3 class="no-pauses-title">⚠️ Usuarios sin Pausas el <?php echo date('d/m/Y', strtotime($monitoringDate)); ?> (<?php echo count($usersWithoutPauses); ?>)</h3>
-                  <p class="no-pauses-description">Estos usuarios no han registrado pausas en la fecha monitoreada, lo cual es anormal</p>
-                  
-                  <div class="data-table">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>EMPLEADO</th>
-                          <th>DEPARTMENT</th>
-                          <th>ESTADO</th>
-                          <th>ACCIONES</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <?php foreach ($usersWithoutPauses as $user): ?>
-                          <tr class="no-pauses-row">
-                            <td class="text-left font-weight-bold">
-                              <div class="user-avatar">
-                                <i data-feather="user"></i>
-                              </div>
-                              <?php echo htmlspecialchars($user['name']); ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($user['department']); ?></td>
-                            <td>
-                              <span class="status-warning">Sin Pausas</span>
-                            </td>
-                            <td>
-                              <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
-                                <i data-feather="eye"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        <?php endforeach; ?>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              <?php endif; ?>
             </div>
-
-            <!-- Columna 2: Usuarios Trabajando -->
-            <div class="column-two">
+            
+            <!-- Sección 2: Empleados Trabajando -->
+            <div class="full-width-section" style="margin-top: 30px;">
               <h3>Empleados Trabajando (<?php echo count($usersWorking); ?>)</h3>
               <?php if (empty($usersWorking)): ?>
                 <div class="description">Todos los empleados están en pausa</div>
@@ -260,28 +199,16 @@ foreach ($allEmployees as $user) {
                             echo $userPauses;
                           ?></td>
                           <td class="total-column"><?php 
-                            // Calcular tiempo total en pausa de este usuario específico (solo pausas completadas)
-                            $totalSeconds = 0;
+                            // Calcular tiempo total en pausa de este usuario (solo pausas completadas)
+                            $userTotalTime = 0;
                             foreach ($allPauses as $p) {
                               if ($p['employee_id'] == $user['id'] && $p['end_time']) {
-                                $start = new DateTime($p['start_time']);
-                                $end = new DateTime($p['end_time']);
-                                $interval = $start->diff($end);
-                                $totalSeconds += $interval->h * 3600 + $interval->i * 60 + $interval->s;
+                                $start = strtotime($p['start_time']);
+                                $end = strtotime($p['end_time']);
+                                $userTotalTime += round(($end - $start) / 60);
                               }
                             }
-                            
-                            // Formatear el tiempo total
-                            $hours = floor($totalSeconds / 3600);
-                            $minutes = floor(($totalSeconds % 3600) / 60);
-                            $seconds = $totalSeconds % 60;
-                            
-                            $timeString = '';
-                            if ($hours > 0) $timeString .= $hours . 'h ';
-                            if ($minutes > 0 || $hours > 0) $timeString .= $minutes . 'm ';
-                            $timeString .= $seconds . 's';
-                            
-                            echo $timeString;
+                            echo $userTotalTime . ' min';
                           ?></td>
                           <td>
                             <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
@@ -295,7 +222,67 @@ foreach ($allEmployees as $user) {
                 </div>
               <?php endif; ?>
             </div>
-          </div>
+            
+            <!-- Sección 3: Usuarios sin Pausas -->
+            <?php
+              // Usuarios que no han tenido pausas en la fecha monitoreada
+              $usersWithoutPauses = [];
+              
+              foreach ($allEmployees as $user) {
+                  $hasPausesToday = false;
+                  foreach ($allPauses as $pause) {
+                      if ($pause['employee_id'] == $user['id']) {
+                          $hasPausesToday = true;
+                          break;
+                      }
+                  }
+                  if (!$hasPausesToday) {
+                      $usersWithoutPauses[] = $user;
+                  }
+              }
+            ?>
+              
+              <?php if (!empty($usersWithoutPauses)): ?>
+                <div class="full-width-section" style="margin-top: 30px;">
+                  <h3>⚠️ Usuarios sin Pausas el <?php echo date('d/m/Y', strtotime($monitoringDate)); ?> (<?php echo count($usersWithoutPauses); ?>)</h3>
+                  <p class="description">Estos usuarios no han registrado pausas en la fecha monitoreada</p>
+                  
+                  <div class="data-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>EMPLEADO</th>
+                          <th>DEPARTMENT</th>
+                          <th>ESTADO</th>
+                          <th>ACCIONES</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach ($usersWithoutPauses as $user): ?>
+                          <tr class="no-pauses-row">
+                            <td class="text-left font-weight-bold">
+                              <div class="user-avatar">
+                                <i data-feather="user"></i>
+                              </div>
+                              <?php echo htmlspecialchars($user['name']); ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($user['department']); ?></td>
+                            <td>
+                              <span class="status-warning">Sin Pausas</span>
+                            </td>
+                            <td>
+                              <button class="button action-btn" title="Ver detalles" onclick="showUserModal('<?php echo htmlspecialchars($user['id']); ?>', '<?php echo htmlspecialchars($user['name']); ?>', '<?php echo htmlspecialchars($user['username']); ?>')">
+                                <i data-feather="eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              <?php endif; ?>
+            </div>
         </div>
       </div>
     </div>

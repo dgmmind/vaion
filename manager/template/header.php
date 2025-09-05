@@ -77,6 +77,7 @@ $managerId = $_SESSION["manager_id"];
       <div class="tabs">
         <a href="dashboard.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>" data-tab="dashboard"><i data-feather="sidebar"></i> Dashboard</a>
         <a href="monitoring.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'monitoring.php' ? 'active' : ''; ?>" data-tab="monitoring"><i data-feather="monitor"></i> Monitoring</a>
+        <a href="pauses.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'pauses.php' ? 'active' : ''; ?>" data-tab="pauses"><i data-feather="clock"></i> Pausas</a>
         <a href="create_day.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'create_day.php' ? 'active' : ''; ?>" data-tab="create-day"><i data-feather="calendar"></i> Create Day</a>
         <a href="evaluations.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'evaluations.php' ? 'active' : ''; ?>" data-tab="evaluations"><i data-feather="briefcase"></i> Evaluations</a>
         <a href="metricts.php" class="tab <?php echo basename($_SERVER['PHP_SELF']) == 'metricts.php' ? 'active' : ''; ?>" data-tab="metricts"><i data-feather="bar-chart"></i> Metricts</a>

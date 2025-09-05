@@ -31,10 +31,17 @@ switch ($action) {
             exit;
         }
         
-        // Obtener solo las pausas del día actual
-        $today = date('Y-m-d');
+        // Obtener el rango de fechas de los parámetros o usar el día actual
+        $startDate = $_GET['startDate'] ?? date('Y-m-d');
+        $endDate = $_GET['endDate'] ?? date('Y-m-d');
+        
+        // Validar fechas
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate)) $startDate = date('Y-m-d');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) $endDate = date('Y-m-d');
+        
+        // Obtener pausas en el rango de fechas
         $pausesResponse = $supabase->select('pauses', '*', [
-            'conditions' => "employee_id.eq.{$userId},start_time.gte.{$today}T00:00:00,start_time.lt.{$today}T23:59:59",
+            'conditions' => "employee_id.eq.{$userId},start_time.gte.{$startDate}T00:00:00,start_time.lte.{$endDate}T23:59:59",
             'order' => 'start_time.desc'
         ]);
 

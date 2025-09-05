@@ -57,16 +57,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Si se encontró el usuario
     if ($user && $userRole && $managerKey) {
-        // Iniciar sesión
+        // Cerrar cualquier sesión existente para este usuario
+        session_unset();
+        session_destroy();
+        
+        // Iniciar una nueva sesión segura
+        session_start([
+            'use_strict_mode' => true,
+            'use_cookies' => 1,
+            'use_only_cookies' => 1,
+            'cookie_httponly' => 1,
+            'cookie_samesite' => 'Strict'
+        ]);
+        
+        // Configurar los datos de la sesión
+        $_SESSION = [];
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['name'] = $user['name'];
         $_SESSION['role'] = $userRole;
+        $_SESSION['last_activity'] = time();
+        $_SESSION['created'] = time();
+        $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
+        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
         
         // Solo los managers y superadmins necesitan manager_id
         if (in_array($userRole, ['admin', 'superadmin'])) {
             $_SESSION['manager_id'] = $managerKey;
         }
+        
+        // Regenerar el ID de sesión para prevenir fijación de sesión
+        session_regenerate_id(true);
         
         // Redirigir según el rol
         if ($userRole === 'superadmin') {
